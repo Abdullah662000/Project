@@ -1,12 +1,30 @@
 const mongoose=require("mongoose");
 const schema =mongoose.Schema({
+    storeName:{
+        type:String,
+        required:true
+},
     branchName:String,
-    cordinate:[
-        {longitude:Number,lattitude:Number}
-    ],
-    locationByCity:{type:String,required:true},
-    locationByCountry:{type:String,required:true},
-    openingTime:{type:Date,required:false},
-    closingTime:{type:Date,required:false}
+    location:{
+        type:{
+            type:String,
+            enum: ['Point']
+        },coordinates:{
+            type:[Number],
+            index:"2dsphere",
+            
+        }
+
+    },
+    locationByCountry:{
+        type:String,
+        required:true
+    },
+    locationByCity:{
+        type:String,
+        required:true
+    },
+    openingTime:{type:Date},
+    closingTime:{type:Date}
 })
 module.exports=mongoose.model("Store",schema)

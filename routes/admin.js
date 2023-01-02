@@ -1,7 +1,7 @@
 const router =require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const addStore=require("../controller/adminController")
+const {addStore,getStore,getAllStores,getStoreByLocation}=require("../controller/adminController")
 const Store =require("../model/Store")
 const Product =require("../model/Product")
 const multer =require("multer")
@@ -22,24 +22,10 @@ var storage = multer.diskStorage({
  
 var upload = multer({ storage: storage });
 
-router.post("/addStore",async(req,res)=>{
-
-    const store = new Store({
-        branchName:req.body.branchName,
-        cordinate:[{longitude:req.body.longitude,lattitude:req.body.lattitude}],
-        locationByCity:req.body.locationByCity,
-        locationByCountry:req.body.locationByCountry,
-        openingTime:req.body.openingTime,
-        closingTime:req.body.closingTime
-    })
-    try{
-    const s= await store.save()
-    res.status(200).send("store saved")
-    }
-    catch(err){
-          res.status(400).send(err)
-    }
-})
+router.post("/addStore",addStore)
+router.get("/getStore",getStore)
+router.get("/getAllStores",getAllStores)
+router.get("/getStoreByLocation",getStoreByLocation)
 router.post("/addProduct",upload.single('image'),async(req,res)=>{
     
     const prod = new Product({
