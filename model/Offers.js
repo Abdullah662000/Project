@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema({
   name: { type: String, required: true },
   image: { data: Buffer, contentType: String },
-  orignalPrice: { type: Number, required: true },
-  offerPrice: Number,
-  storeId: String,
+  startDate: { type: Date },
+  endDate: { type: Date },
+  storeId: { type: Array, required: true },
 });
-module.exports = mongoose.model("Product", schema);

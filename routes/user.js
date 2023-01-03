@@ -1,4 +1,7 @@
-const router =require("express").Router();
+const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-module.exports=router
+const { userSignup, userSignin } = require("../controller/userController");
+router.post("/userSignup", userSignup);
+router.get("/userSignin", userSignin);
+module.exports = router;
