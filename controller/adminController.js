@@ -5,6 +5,8 @@ const Product = require("../model/Product");
 const Admin = require("../model/Admin");
 const multer = require("multer");
 const path = require("path");
+const Offers = require("../model/Offers");
+const cron = require("node-cron");
 //Admin login Signup
 exports.adminSignup = async (req, res) => {
   try {
@@ -75,39 +77,18 @@ exports.getAllStores = async (req, res) => {
 };
 exports.getStoreByLocation = async (req, res) => {
   try {
-    const latitude = 28.626137;
-    const longitude = 79.821602;
-    const distance = 1;
-    const unitValue = 1000;
-    const stores = await Store.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-          query: {
-            status: true,
-          },
-          maxDistance: distance * unitValue,
-          distanceField: "distance",
-          distanceMultiplier: 1 / unitValue,
+    const { lattitude, longnitude } = req.body;
+
+    console.log(lattitude, longnitude);
+    const options = {
+      location: {
+        $geoWithin: {
+          $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
         },
       },
-      {
-        $project: {
-          _id: 1,
-          distance: 1,
-        },
-      },
-      {
-        $sort: {
-          distance: 1,
-        },
-      },
-      { $limit: 5 },
-    ]);
-    res.status(200).send(stores);
+    };
+    const store = await Store.find(options);
+    res.send(store);
   } catch (err) {
     res.status(400).send(err);
   }
@@ -167,9 +148,34 @@ exports.getAllProducts = async (req, res) => {
     }
   } catch (err) {}
 };
-
-// export const addProduct =async(req,res)=>{
-//     const prod= new Product({
-//         name:req.body.name,
-//     })
-// }
+//offermanagement
+exports.addOffer = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      res.send(err);
+    } else {
+      try {
+        const offer = new Offers({
+          name: req.body.name,
+          image: {
+            data: req.file.filename,
+            contentType: "image/png",
+          },
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          storeId: req.body.storeId,
+        });
+        var endDate = new Date(req.body.endDate);
+        var day = endDate.getDay();
+        var hour = endDate.getHour();
+        var minutes = endDate.getMinutes();
+        console.log(day, hour, minutes);
+        const s = await offer.save();
+        res.status(200).send(s);
+      } catch (err) {
+        console.log(err);
+        res.send(err);
+      }
+    }
+  });
+};

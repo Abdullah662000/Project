@@ -10,6 +10,7 @@ const {
   addProduct,
   getSpecProduct,
   getAllProducts,
+  addOffer,
 } = require("../controller/adminController");
 router.get("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
@@ -20,4 +21,5 @@ router.get("/getStoreByLocation", verification, getStoreByLocation);
 router.post("/addProduct", verification, addProduct);
 router.get("/getSpecProduct", verification, getSpecProduct);
 router.get("/getAllProducts", verification, getAllProducts);
+router.post("/addOffer", addOffer);
 module.exports = router;

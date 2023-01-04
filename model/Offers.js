@@ -6,3 +6,4 @@ const schema = mongoose.Schema({
   endDate: { type: Date },
   storeId: { type: Array, required: true },
 });
+module.exports = mongoose.model("Offers", schema);
