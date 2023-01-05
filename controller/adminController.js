@@ -4,9 +4,10 @@ const Store = require("../model/Store");
 const Product = require("../model/Product");
 const Admin = require("../model/Admin");
 const multer = require("multer");
-const path = require("path");
+//
 const Offers = require("../model/Offers");
 const cron = require("node-cron");
+const { find } = require("../model/Store");
 //Admin login Signup
 exports.adminSignup = async (req, res) => {
   try {
@@ -75,11 +76,21 @@ exports.getAllStores = async (req, res) => {
     res.send(err);
   }
 };
+exports.getStoreByCity = async (req, res) => {
+  try {
+    const store = await Store.find({ locationByCity: req.body.locationByCity });
+    if (store) {
+      res.status(200).send(store);
+    } else {
+      res.send(404).send("No Stores in stated city");
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
 exports.getStoreByLocation = async (req, res) => {
   try {
     const { lattitude, longnitude } = req.body;
-
-    console.log(lattitude, longnitude);
     const options = {
       location: {
         $geoWithin: {
@@ -166,11 +177,16 @@ exports.addOffer = async (req, res) => {
           storeId: req.body.storeId,
         });
         var endDate = new Date(req.body.endDate);
-        var day = endDate.getDay();
-        var hour = endDate.getHour();
+        var day = endDate.getDate();
+        var month = endDate.getMonth();
+        var hour = endDate.getHours();
         var minutes = endDate.getMinutes();
-        console.log(day, hour, minutes);
+        var seconds = endDate.getSeconds();
+        var seconds = 10;
         const s = await offer.save();
+        cron.schedule(`${seconds}  * * * * `, async () => {
+          await Offers.deleteOne({ _id: s._id });
+        });
         res.status(200).send(s);
       } catch (err) {
         console.log(err);
@@ -178,4 +194,16 @@ exports.addOffer = async (req, res) => {
       }
     }
   });
+};
+exports.getOffer = async (req, res) => {
+  try {
+    const offer = await Offers.find();
+    if (offer) {
+      res.status(200).send(offer);
+    } else {
+      res.status(404).send("no offers found");
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
 };

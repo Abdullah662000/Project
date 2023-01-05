@@ -11,10 +11,12 @@ const {
   getSpecProduct,
   getAllProducts,
   addOffer,
+  getStoreByCity,
 } = require("../controller/adminController");
 router.get("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
 router.post("/addStore", verification, addStore);
+router.get("/getStoreByCity", getStoreByCity);
 router.get("/getStore", verification, getStore);
 router.get("/getAllStores", verification, getAllStores);
 router.get("/getStoreByLocation", verification, getStoreByLocation);
