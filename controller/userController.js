@@ -79,6 +79,7 @@ exports.getAllFavProduct = async (req, res) => {
     if (prod) {
       res.status(200).send(prod);
     } else {
+      console.log("no fave prod");
       res.status(404).send("no fav products found");
     }
   } catch (err) {
