@@ -13,14 +13,15 @@ const {
   getAllFavStore,
   deleteFavStore,
 } = require("../controller/userController");
+const verification = require("../controller/verification");
 router.post("/userSignup", userSignup);
-router.post("/addFavProduct", addFavProduct);
-router.get("/getFavProduct", getFavProduct);
-router.post("/addFavStore", addFavStore);
-router.get("/getAllFavStore", getAllFavStore);
-router.get("/getAllFavProducts", getAllFavProduct);
-router.post("/deleteFavProd", deleteFavProduct);
-router.post("/deleteFavStore", deleteFavStore);
-router.get("/getFavStore", getFavStore);
+router.post("/addFavProduct", verification, addFavProduct);
+router.get("/getFavProduct", verification, getFavProduct);
+router.post("/addFavStore", verification, addFavStore);
+router.get("/getAllFavStore", verification, getAllFavStore);
+router.get("/getAllFavProducts", verification, getAllFavProduct);
+router.post("/deleteFavProd", verification, deleteFavProduct);
+router.post("/deleteFavStore", verification, deleteFavStore);
+router.get("/getFavStore", verification, getFavStore);
 router.get("/userSignin", userSignin);
 module.exports = router;
