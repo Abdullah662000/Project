@@ -115,9 +115,9 @@ exports.addFavStore = async (req, res) => {
 };
 exports.getFavStore = async (req, res) => {
   try {
+    console.log(req.body);
     const favstore = await FavStore.find({
-      userId: req.body.userId,
-      storeId: req.body.storeId,
+      _id: req.body.id,
     });
     if (favstore) {
       res.status(200).send(favstore);
