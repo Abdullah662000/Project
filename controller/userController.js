@@ -62,8 +62,7 @@ exports.addFavProduct = async (req, res) => {
 exports.getFavProduct = async (req, res) => {
   try {
     const favProd = await FavProduct.find({
-      userId: req.body.userId,
-      productId: req.body.productId,
+      _id: req.body.id,
     });
     if (favProd) {
       res.status(200).send(favProd);

@@ -151,7 +151,7 @@ exports.getSpecProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const prod = await Product.find();
-    console.log(prod);
+
     if (prod) {
       res.status(200).send(prod);
     } else {
@@ -172,9 +172,12 @@ exports.addOffer = async (req, res) => {
             data: req.file.filename,
             contentType: "image/png",
           },
+          price: req.body.price,
+          offerPrice: req.body.offerPrice,
           startDate: req.body.startDate,
           endDate: req.body.endDate,
           storeId: req.body.storeId,
+          productId: req.body.productId,
         });
         var endDate = new Date(req.body.endDate);
         var day = endDate.getDate();
