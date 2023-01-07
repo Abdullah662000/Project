@@ -25,5 +25,9 @@ const schema = mongoose.Schema({
   },
   openingTime: { type: Date },
   closingTime: { type: Date },
+  offerName: { type: String },
+  status: { type: Boolean, default: false },
+  startDate: { type: Date },
+  endDate: { type: Date },
 });
 module.exports = mongoose.model("Store", schema);
