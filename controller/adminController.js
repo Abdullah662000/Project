@@ -73,6 +73,16 @@ exports.getParentStore = async (req, res) => {
     res.status(400).send(err);
   }
 };
+exports.getAllParentStore = async (req, res) => {
+  try {
+    const store = await ParentStore.find();
+    if (store) {
+      res.status(200).send(store);
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
 //Store Management
 exports.addStore = async (req, res) => {
   try {

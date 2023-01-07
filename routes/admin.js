@@ -14,6 +14,7 @@ const {
   getStoreByCity,
   addParentStore,
   getParentStore,
+  getAllParentStore,
 } = require("../controller/adminController");
 router.get("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
@@ -24,6 +25,7 @@ router.get("/getAllStores", verification, getAllStores);
 router.get("/getStoreByLocation", verification, getStoreByLocation);
 router.post("/addParentStore", addParentStore);
 router.get("/getParentStore", getParentStore);
+router.get("/getAllParentStore", getAllParentStore);
 router.post("/addProduct", verification, addProduct);
 router.get("/getSpecProduct", verification, getSpecProduct);
 router.get("/getAllProducts", verification, getAllProducts);
