@@ -16,6 +16,8 @@ const {
   getAllParentStore,
   addOfferByBranch,
   addOfferOnStore,
+  addOfferOnProduct,
+  getNearbyOffer,
 } = require("../controller/adminController");
 router.get("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
@@ -30,6 +32,8 @@ router.get("/getAllParentStore", verification, getAllParentStore);
 router.post("/addProduct", verification, addProduct);
 router.get("/getSpecProduct", verification, getSpecProduct);
 router.get("/getAllProducts", verification, getAllProducts);
-router.post("/addOfferByBranch", addOfferByBranch);
-router.post("/addOfferOnStore", addOfferOnStore);
+router.post("/addOfferByBranch", verification, addOfferByBranch);
+router.post("/addOfferOnStore", verification, addOfferOnStore);
+router.post("/addOfferOnProduct", verification, addOfferOnProduct);
+router.get("/getNearbyOffer", verification, getNearbyOffer);
 module.exports = router;

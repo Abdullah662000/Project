@@ -329,10 +329,11 @@ exports.addOfferOnStore = async (req, res) => {
 // };
 exports.addOfferOnProduct = async (req, res) => {
   try {
-    const prod = await find({ _id: req.body.productId });
+    const prod = await Product.find({ _id: req.body.productId });
+    console.log(prod._id);
     if (prod) {
-      const p = await updateOne(
-        { _id: prod._id },
+      const p = await Product.updateOne(
+        { _id: req.body.productId },
         {
           $set: {
             offerName: req.body.offerName,
@@ -346,6 +347,27 @@ exports.addOfferOnProduct = async (req, res) => {
     } else {
       res.status(400).send("product not found");
     }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
+exports.getNearbyOffer = async (req, res) => {
+  try {
+    const { lattitude, longnitude } = req.body;
+    const options = {
+      location: {
+        $geoWithin: {
+          $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+        },
+      },
+    };
+    const store = await Store.find(options);
+    for (let i = 0; i < store.length; i++) {
+      if (store[i].status == false) {
+        store.splice(i, 1);
+      }
+    }
+    res.status(200).send(store);
   } catch (err) {
     res.status(400).send(err);
   }
