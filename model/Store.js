@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema({
-  storeName: {
-    type: String,
+  storeId: {
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   branchName: String,
