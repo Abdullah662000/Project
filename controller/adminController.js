@@ -156,13 +156,13 @@ exports.addProduct = async (req, res) => {
       try {
         const prod = new Product({
           name: req.body.name,
+          branchId: req.body.branchId,
           image: {
             data: req.file.filename,
             contentType: "image/png",
           },
           orignalPrice: req.body.orignalPrice,
           offerPrice: req.body.offerPrice,
-          storeId: req.body.storeId,
         });
         const s = await prod.save();
         res.send(s).status(200);
