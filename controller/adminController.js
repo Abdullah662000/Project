@@ -8,7 +8,7 @@ const multer = require("multer");
 //
 const Offers = require("../model/Offers");
 const cron = require("node-cron");
-const { find } = require("../model/Store");
+const { find, findById, updateOne } = require("../model/Store");
 //Admin login Signup
 exports.adminSignup = async (req, res) => {
   try {
@@ -163,9 +163,13 @@ exports.addProduct = async (req, res) => {
           },
           orignalPrice: req.body.orignalPrice,
           offerPrice: req.body.offerPrice,
+          offerName: req.body.offerName,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          status: req.body.status,
         });
         const s = await prod.save();
-        res.send(s).status(200);
+        res.send("product saved").status(200);
       } catch (err) {
         res.status(400).send(err);
       }
@@ -196,51 +200,151 @@ exports.getAllProducts = async (req, res) => {
   } catch (err) {}
 };
 //offermanagement
-exports.addOffer = async (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      try {
-        const offer = new Offers({
-          name: req.body.name,
-          image: {
-            data: req.file.filename,
-            contentType: "image/png",
-          },
-          price: req.body.price,
-          offerPrice: req.body.offerPrice,
-          startDate: req.body.startDate,
-          endDate: req.body.endDate,
-          storeId: req.body.storeId,
-          productId: req.body.productId,
-        });
-        var endDate = new Date(req.body.endDate);
-        var day = endDate.getDate();
-        var month = endDate.getMonth();
-        var hour = endDate.getHours();
-        var minutes = endDate.getMinutes();
-        var seconds = endDate.getSeconds();
-        var seconds = 10;
-        const s = await offer.save();
-        cron.schedule(`${seconds}  * * * * `, async () => {
-          await Offers.deleteOne({ _id: s._id });
-        });
-        res.status(200).send(s);
-      } catch (err) {
-        console.log(err);
-        res.send(err);
-      }
-    }
-  });
-};
-exports.getOffer = async (req, res) => {
+// exports.addOffer = async (req, res) => {
+//   upload(req, res, async (err) => {
+//     if (err) {
+//       res.send(err);
+//     } else {
+//       try {
+//         const offer = new Offers({
+//           name: req.body.name,
+//           image: {
+//             data: req.file.filename,
+//             contentType: "image/png",
+//           },
+//           price: req.body.price,
+//           offerPrice: req.body.offerPrice,
+//           startDate: req.body.startDate,
+//           endDate: req.body.endDate,
+//           storeId: req.body.storeId,
+//           productId: req.body.productId,
+//         });
+//         var endDate = new Date(req.body.endDate);
+//         var day = endDate.getDate();
+//         var month = endDate.getMonth();
+//         var hour = endDate.getHours();
+//         var minutes = endDate.getMinutes();
+//         var seconds = endDate.getSeconds();
+//         var seconds = 10;
+//         const s = await offer.save();
+//         cron.schedule(`${seconds}  * * * * `, async () => {
+//           await Offers.deleteOne({ _id: s._id });
+//         });
+//         res.status(200).send(s);
+//       } catch (err) {
+//         console.log(err);
+//         res.send(err);
+//       }
+//     }
+//   });
+// };
+exports.addOfferByBranch = async (req, res) => {
   try {
-    const offer = await Offers.find();
-    if (offer) {
-      res.status(200).send(offer);
+    const store = await Store.findById({ _id: req.body.id });
+    //console.log(store);
+    if (store.status == false) {
+      const s = await Store.updateOne(
+        { _id: store._id },
+        {
+          $set: {
+            offerName: req.body.offerName,
+            status: true,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
+          },
+        }
+      );
+      var endDate = new Date(req.body.endDate);
+      var day = endDate.getDate();
+      var month = endDate.getMonth();
+      var hour = endDate.getHours();
+      var minutes = endDate.getMinutes();
+      var seconds = endDate.getSeconds();
+      cron.schedule(
+        `${seconds} ${minutes} ${hour} ${day} ${month} * `,
+        async () => {
+          await Store.updateOne(
+            { _id: store._id },
+            { $set: { status: false } }
+          );
+        }
+      );
+      res.status(200).send(s);
     } else {
-      res.status(404).send("no offers found");
+      res.send("offer already active ");
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
+exports.addOfferOnStore = async (req, res) => {
+  try {
+    const store = await ParentStore.findById({ _id: req.body.id });
+    if (store) {
+      const stores = await Store.updateMany(
+        { storeId: store._id },
+        {
+          $set: {
+            offerName: req.body.offerName,
+            status: true,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
+          },
+        }
+      );
+      var endDate = new Date(req.body.endDate);
+      var day = endDate.getDate();
+      var month = endDate.getMonth();
+      var hour = endDate.getHours();
+      var minutes = endDate.getMinutes();
+      var seconds = endDate.getSeconds();
+      cron.schedule(
+        `${seconds} ${minutes} ${hour} ${day} ${month} * `,
+        async () => {
+          await Store.updateMany(
+            { storeId: store._id },
+            { $set: { status: false } }
+          );
+        }
+      );
+      res.status(200).send(stores);
+    } else {
+      res.status(400).send("store not found");
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
+// exports.getOffer = async (req, res) => {
+//   try {
+//     const offer = await Offers.find();
+//     if (offer) {
+//       res.status(200).send(offer);
+//     } else {
+//       res.status(404).send("no offers found");
+//     }
+//   } catch (err) {
+//     res.status(400).send(err);
+//   }
+// };
+exports.addOfferOnProduct = async (req, res) => {
+  try {
+    const prod = await find({ _id: req.body.productId });
+    if (prod) {
+      const p = await updateOne(
+        { _id: prod._id },
+        {
+          $set: {
+            offerName: req.body.offerName,
+            status: true,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
+          },
+        }
+      );
+      res.status(200).send(p);
+    } else {
+      res.status(400).send("product not found");
     }
   } catch (err) {
     res.status(400).send(err);

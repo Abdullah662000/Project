@@ -10,11 +10,12 @@ const {
   addProduct,
   getSpecProduct,
   getAllProducts,
-  addOffer,
   getStoreByCity,
   addParentStore,
   getParentStore,
   getAllParentStore,
+  addOfferByBranch,
+  addOfferOnStore,
 } = require("../controller/adminController");
 router.get("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
@@ -24,10 +25,11 @@ router.get("/getStore", verification, getStore);
 router.get("/getAllStores", verification, getAllStores);
 router.get("/getStoreByLocation", verification, getStoreByLocation);
 router.post("/addParentStore", addParentStore);
-router.get("/getParentStore", getParentStore);
-router.get("/getAllParentStore", getAllParentStore);
-router.post("/addProduct", addProduct);
+router.get("/getParentStore", verification, getParentStore);
+router.get("/getAllParentStore", verification, getAllParentStore);
+router.post("/addProduct", verification, addProduct);
 router.get("/getSpecProduct", verification, getSpecProduct);
 router.get("/getAllProducts", verification, getAllProducts);
-router.post("/addOffer", verification, addOffer);
+router.post("/addOfferByBranch", addOfferByBranch);
+router.post("/addOfferOnStore", addOfferOnStore);
 module.exports = router;

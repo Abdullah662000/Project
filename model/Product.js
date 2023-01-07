@@ -5,5 +5,9 @@ const schema = mongoose.Schema({
   image: { data: Buffer, contentType: String },
   orignalPrice: { type: Number, required: true },
   offerPrice: Number,
+  offerName: { type: String },
+  startDate: { type: Date },
+  endDate: { type: Date },
+  status: { type: Boolean, default: false },
 });
 module.exports = mongoose.model("Product", schema);
