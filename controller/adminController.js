@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Store = require("../model/Store");
+const ParentStore = require("../model/ParentStore");
 const Product = require("../model/Product");
 const Admin = require("../model/Admin");
 const multer = require("multer");
@@ -51,6 +52,27 @@ exports.adminSignin = async (req, res) => {
     res.status(400).send(err);
   }
 };
+// parent store mangement
+exports.addParentStore = async (req, res) => {
+  try {
+    const store = await ParentStore.create(req.body);
+    res.status(200).send("store Saved");
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
+exports.getParentStore = async (req, res) => {
+  try {
+    const store = await ParentStore.findById({ _id: req.body.id });
+    if (store) {
+      res.status(200).send(store);
+    } else {
+      res.status(404).send("no store found");
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
 //Store Management
 exports.addStore = async (req, res) => {
   try {
@@ -63,7 +85,11 @@ exports.addStore = async (req, res) => {
 exports.getStore = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.id });
-    res.status(200).send(store);
+    if (store) {
+      res.status(200).send(store);
+    } else {
+      res.status(404).send("no store found");
+    }
   } catch (err) {
     res.send(err);
   }

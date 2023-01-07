@@ -6,7 +6,7 @@ const schema = mongoose.Schema({
   image: { data: Buffer, contentType: String },
   startDate: { type: Date },
   endDate: { type: Date },
-  productId: { type: String, required: true },
+  productId: { type: Array, required: true },
   storeId: { type: Array, required: true },
 });
 module.exports = mongoose.model("Offers", schema);
