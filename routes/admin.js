@@ -26,7 +26,7 @@ router.get("/getStoreByLocation", verification, getStoreByLocation);
 router.post("/addParentStore", addParentStore);
 router.get("/getParentStore", getParentStore);
 router.get("/getAllParentStore", getAllParentStore);
-router.post("/addProduct", verification, addProduct);
+router.post("/addProduct", addProduct);
 router.get("/getSpecProduct", verification, getSpecProduct);
 router.get("/getAllProducts", verification, getAllProducts);
 router.post("/addOffer", verification, addOffer);
