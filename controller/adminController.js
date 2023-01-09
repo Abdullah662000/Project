@@ -22,12 +22,12 @@ exports.adminSignup = async (req, res) => {
     });
     const find = await Admin.findOne({ email: req.body.email });
     if (find) {
-      return res.status(400).send("user already exists");
+      return res.status(400).json("user already exists");
     }
     const s = await user.save();
-    res.status(200).send(s);
+    res.status(200).json(s);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.adminSignin = async (req, res) => {
@@ -41,87 +41,87 @@ exports.adminSignin = async (req, res) => {
           process.env.TOKEN_SECRET
         );
         res.header(token, "auth-token");
-        res.send(token);
+        res.json(token);
       } else {
-        res.status(400).send("email or pass incorrect");
+        res.status(400).json("email or pass incorrect");
       }
     } else {
-      res.status(400).send("email or pass incorrect");
+      res.status(400).json("email or pass incorrect");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 // parent store mangement
 exports.addParentStore = async (req, res) => {
   try {
     const store = await ParentStore.create(req.body);
-    res.status(200).send("store Saved");
+    res.status(200).json("store Saved");
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.getParentStore = async (req, res) => {
   try {
     const store = await ParentStore.findById({ _id: req.body.id });
     if (store) {
-      res.status(200).send(store);
+      res.status(200).json(store);
     } else {
-      res.status(404).send("no store found");
+      res.status(404).json("no store found");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.getAllParentStore = async (req, res) => {
   try {
     const store = await ParentStore.find();
     if (store) {
-      res.status(200).send(store);
+      res.status(200).json(store);
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 //Store Management
 exports.addStore = async (req, res) => {
   try {
     const store = await Store.create(req.body);
-    res.status(200).send("store saved");
+    res.status(200).json("store saved");
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.getStore = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.id });
     if (store) {
-      res.status(200).send(store);
+      res.status(200).json(store);
     } else {
-      res.status(404).send("no store found");
+      res.status(404).json("no store found");
     }
   } catch (err) {
-    res.send(err);
+    res.json(err);
   }
 };
 exports.getAllStores = async (req, res) => {
   try {
     const stores = await Store.find();
-    res.status(200).send(stores);
+    res.status(200).json(stores);
   } catch (err) {
-    res.send(err);
+    res.json(err);
   }
 };
 exports.getStoreByCity = async (req, res) => {
   try {
     const store = await Store.find({ locationByCity: req.body.locationByCity });
     if (store) {
-      res.status(200).send(store);
+      res.status(200).json(store);
     } else {
-      res.send(404).send("No Stores in stated city");
+      res.json(404).json("No Stores in stated city");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.getStoreByLocation = async (req, res) => {
@@ -135,9 +135,9 @@ exports.getStoreByLocation = async (req, res) => {
       },
     };
     const store = await Store.find(options);
-    res.send(store);
+    res.json(store);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 const Storage = multer.diskStorage({
@@ -151,7 +151,7 @@ const upload = multer({ storage: Storage }).single("testImage");
 exports.addProduct = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      res.send(err);
+      res.json(err);
     } else {
       try {
         const prod = new Product({
@@ -169,9 +169,9 @@ exports.addProduct = async (req, res) => {
           status: req.body.status,
         });
         const s = await prod.save();
-        res.send("product saved").status(200);
+        res.json("product saved").status(200);
       } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json(err);
       }
     }
   });
@@ -180,12 +180,12 @@ exports.getSpecProduct = async (req, res) => {
   try {
     const prod = await Product.findById({ _id: req.body.id });
     if (prod) {
-      res.status(200).send(prod);
+      res.status(200).json(prod);
     } else {
-      res.status(404).send("Product not found");
+      res.status(404).json("Product not found");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.getAllProducts = async (req, res) => {
@@ -193,9 +193,9 @@ exports.getAllProducts = async (req, res) => {
     const prod = await Product.find();
 
     if (prod) {
-      res.status(200).send(prod);
+      res.status(200).json(prod);
     } else {
-      res.status(404).send("No products available");
+      res.status(404).json("No products available");
     }
   } catch (err) {}
 };
@@ -203,7 +203,7 @@ exports.getAllProducts = async (req, res) => {
 // exports.addOffer = async (req, res) => {
 //   upload(req, res, async (err) => {
 //     if (err) {
-//       res.send(err);
+//       res.json(err);
 //     } else {
 //       try {
 //         const offer = new Offers({
@@ -230,10 +230,10 @@ exports.getAllProducts = async (req, res) => {
 //         cron.schedule(`${seconds}  * * * * `, async () => {
 //           await Offers.deleteOne({ _id: s._id });
 //         });
-//         res.status(200).send(s);
+//         res.status(200).json(s);
 //       } catch (err) {
 //         console.log(err);
-//         res.send(err);
+//         res.json(err);
 //       }
 //     }
 //   });
@@ -269,12 +269,12 @@ exports.addOfferByBranch = async (req, res) => {
           );
         }
       );
-      res.status(200).send(s);
+      res.status(200).json(s);
     } else {
-      res.send("offer already active ");
+      res.json("offer already active ");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.addOfferOnStore = async (req, res) => {
@@ -307,24 +307,24 @@ exports.addOfferOnStore = async (req, res) => {
           );
         }
       );
-      res.status(200).send(stores);
+      res.status(200).json(stores);
     } else {
-      res.status(400).send("store not found");
+      res.status(400).json("store not found");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 // exports.getOffer = async (req, res) => {
 //   try {
 //     const offer = await Offers.find();
 //     if (offer) {
-//       res.status(200).send(offer);
+//       res.status(200).json(offer);
 //     } else {
-//       res.status(404).send("no offers found");
+//       res.status(404).json("no offers found");
 //     }
 //   } catch (err) {
-//     res.status(400).send(err);
+//     res.status(400).json(err);
 //   }
 // };
 exports.addOfferOnProduct = async (req, res) => {
@@ -343,12 +343,12 @@ exports.addOfferOnProduct = async (req, res) => {
           },
         }
       );
-      res.status(200).send(p);
+      res.status(200).json(p);
     } else {
-      res.status(400).send("product not found");
+      res.status(400).json("product not found");
     }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
 exports.getNearbyOffer = async (req, res) => {
@@ -367,8 +367,8 @@ exports.getNearbyOffer = async (req, res) => {
         store.splice(i, 1);
       }
     }
-    res.status(200).send(store);
+    res.status(200).json(store);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).json(err);
   }
 };
