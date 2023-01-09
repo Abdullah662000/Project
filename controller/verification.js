@@ -3,6 +3,7 @@ module.exports = function (req, res, next) {
   const t = req.header["authorization"];
   const bearer = t.splice(" ");
   const token = bearer[1];
+  console.log(token);
   if (!token) {
     return res.status(400).send("token not found");
   }
