@@ -23,5 +23,5 @@ router.get("/getAllFavProducts", verification, getAllFavProduct);
 router.post("/deleteFavProd", verification, deleteFavProduct);
 router.post("/deleteFavStore", verification, deleteFavStore);
 router.get("/getFavStore", verification, getFavStore);
-router.get("/userSignin", userSignin);
+router.post("/userSignin", userSignin);
 module.exports = router;
