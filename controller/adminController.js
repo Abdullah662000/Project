@@ -43,7 +43,10 @@ exports.adminSignin = async (req, res) => {
         res.header(token, "auth-token");
         res.json(token);
       } else {
-        res.status(400).json("email or pass incorrect");
+        res.status(400).json({
+          status: "400",
+          message: "Email or pass incorrect",
+        });
       }
     } else {
       res.status(400).json("email or pass incorrect");
