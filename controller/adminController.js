@@ -25,9 +25,15 @@ exports.adminSignup = async (req, res) => {
       return res.status(400).json("user already exists");
     }
     const s = await user.save();
-    res.status(200).json(s);
+    res.status(200).json({
+      status: "200",
+      admin: s,
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.adminSignin = async (req, res) => {
@@ -41,7 +47,10 @@ exports.adminSignin = async (req, res) => {
           process.env.TOKEN_SECRET
         );
         res.header(token, "auth-token");
-        res.json(token);
+        res.status(200).json({
+          status: "200",
+          token: token,
+        });
       } else {
         res.status(400).json({
           status: "400",
@@ -49,68 +58,113 @@ exports.adminSignin = async (req, res) => {
         });
       }
     } else {
-      res.status(400).json("email or pass incorrect");
+      res.status(400).json({
+        status: "400",
+        message: "Email or password ",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 // parent store mangement
 exports.addParentStore = async (req, res) => {
   try {
     const store = await ParentStore.create(req.body);
-    res.status(200).json("store Saved");
+    res.status(200).json({
+      status: "200",
+      message: "store saved",
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getParentStore = async (req, res) => {
   try {
     const store = await ParentStore.findById({ _id: req.body.id });
     if (store) {
-      res.status(200).json(store);
+      res.status(200).json({
+        status: "200",
+        store: store,
+      });
     } else {
-      res.status(404).json("no store found");
+      res.status(404).json({
+        status: 404,
+        message: "store not found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getAllParentStore = async (req, res) => {
   try {
     const store = await ParentStore.find();
     if (store) {
-      res.status(200).json(store);
+      res.status(200).json({
+        status: "200",
+        stores: store,
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 //Store Management
 exports.addStore = async (req, res) => {
   try {
     const store = await Store.create(req.body);
-    res.status(200).json("store saved");
+    res.status(200).json({
+      status: "200",
+      message: "store saved",
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getStore = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.id });
     if (store) {
-      res.status(200).json(store);
+      res.status(200).json({
+        status: "200",
+        store: store,
+      });
     } else {
-      res.status(404).json("no store found");
+      res.status(404).json({
+        status: 404,
+        message: "no store found",
+      });
     }
   } catch (err) {
-    res.json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getAllStores = async (req, res) => {
   try {
     const stores = await Store.find();
-    res.status(200).json(stores);
+    res.status(200).json({
+      status: "200",
+      stores: stores,
+    });
   } catch (err) {
     res.json(err);
   }
@@ -119,12 +173,21 @@ exports.getStoreByCity = async (req, res) => {
   try {
     const store = await Store.find({ locationByCity: req.body.locationByCity });
     if (store) {
-      res.status(200).json(store);
+      res.status(200).json({
+        status: "200",
+        store: store,
+      });
     } else {
-      res.json(404).json("No Stores in stated city");
+      res.json(404).json({
+        status: 404,
+        message: "no store found in stated area",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getStoreByLocation = async (req, res) => {
@@ -138,9 +201,15 @@ exports.getStoreByLocation = async (req, res) => {
       },
     };
     const store = await Store.find(options);
-    res.json(store);
+    res.status(200).json({
+      status: "200",
+      store: store,
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 const Storage = multer.diskStorage({
@@ -154,7 +223,10 @@ const upload = multer({ storage: Storage }).single("testImage");
 exports.addProduct = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      res.json(err);
+      res.json({
+        status: "400",
+        error: err,
+      });
     } else {
       try {
         const prod = new Product({
@@ -172,9 +244,18 @@ exports.addProduct = async (req, res) => {
           status: req.body.status,
         });
         const s = await prod.save();
-        res.json("product saved").status(200);
+        res
+          .json({
+            status: "200",
+            product: s,
+            message: "product saved",
+          })
+          .status(200);
       } catch (err) {
-        res.status(400).json(err);
+        res.status(400).json({
+          status: "400",
+          error: err,
+        });
       }
     }
   });
@@ -183,12 +264,21 @@ exports.getSpecProduct = async (req, res) => {
   try {
     const prod = await Product.findById({ _id: req.body.id });
     if (prod) {
-      res.status(200).json(prod);
+      res.status(200).json({
+        status: "200",
+        product: prod,
+      });
     } else {
-      res.status(404).json("Product not found");
+      res.status(404).json({
+        status: 404,
+        message: "product not found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getAllProducts = async (req, res) => {
@@ -196,11 +286,22 @@ exports.getAllProducts = async (req, res) => {
     const prod = await Product.find();
 
     if (prod) {
-      res.status(200).json(prod);
+      res.status(200).json({
+        status: "200",
+        products: prod,
+      });
     } else {
-      res.status(404).json("No products available");
+      res.status(404).json({
+        status: "404",
+        message: "no products found",
+      });
     }
-  } catch (err) {}
+  } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
 };
 //offermanagement
 // exports.addOffer = async (req, res) => {
@@ -233,7 +334,7 @@ exports.getAllProducts = async (req, res) => {
 //         cron.schedule(`${seconds}  * * * * `, async () => {
 //           await Offers.deleteOne({ _id: s._id });
 //         });
-//         res.status(200).json(s);
+//         res.status("200").json(s);
 //       } catch (err) {
 //         console.log(err);
 //         res.json(err);
@@ -272,12 +373,21 @@ exports.addOfferByBranch = async (req, res) => {
           );
         }
       );
-      res.status(200).json(s);
+      res.status(200).json({
+        status: "200",
+        stores: s,
+      });
     } else {
-      res.json("offer already active ");
+      res.json({
+        status: "400",
+        message: "no store found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.addOfferOnStore = async (req, res) => {
@@ -310,24 +420,33 @@ exports.addOfferOnStore = async (req, res) => {
           );
         }
       );
-      res.status(200).json(stores);
+      res.status(200).json({
+        status: 200,
+        stores: stores,
+      });
     } else {
-      res.status(400).json("store not found");
+      res.status(400).json({
+        status: "400",
+        message: "stores not found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 // exports.getOffer = async (req, res) => {
 //   try {
 //     const offer = await Offers.find();
 //     if (offer) {
-//       res.status(200).json(offer);
+//       res.status("200").json(offer);
 //     } else {
 //       res.status(404).json("no offers found");
 //     }
 //   } catch (err) {
-//     res.status(400).json(err);
+//     res.status("400").json(err);
 //   }
 // };
 exports.addOfferOnProduct = async (req, res) => {
@@ -346,12 +465,21 @@ exports.addOfferOnProduct = async (req, res) => {
           },
         }
       );
-      res.status(200).json(p);
+      res.status(200).json({
+        status: "200",
+        product: p,
+      });
     } else {
-      res.status(400).json("product not found");
+      res.status(400).json({
+        status: "400",
+        message: "product not found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getNearbyOffer = async (req, res) => {
@@ -370,8 +498,14 @@ exports.getNearbyOffer = async (req, res) => {
         store.splice(i, 1);
       }
     }
-    res.status(200).json(store);
+    res.status(200).json({
+      status: "200",
+      store: store,
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
