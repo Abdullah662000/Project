@@ -16,12 +16,12 @@ const {
 const verification = require("../controller/verification");
 router.post("/userSignup", userSignup);
 router.post("/addFavProduct", verification, addFavProduct);
-router.get("/getFavProduct", verification, getFavProduct);
+router.post("/getFavProduct", verification, getFavProduct);
 router.post("/addFavStore", verification, addFavStore);
-router.get("/getAllFavStore", verification, getAllFavStore);
-router.get("/getAllFavProducts", verification, getAllFavProduct);
+router.post("/getAllFavStore", verification, getAllFavStore);
+router.post("/getAllFavProducts", verification, getAllFavProduct);
 router.post("/deleteFavProd", verification, deleteFavProduct);
 router.post("/deleteFavStore", verification, deleteFavStore);
-router.get("/getFavStore", verification, getFavStore);
+router.post("/getFavStore", verification, getFavStore);
 router.post("/userSignin", userSignin);
 module.exports = router;
