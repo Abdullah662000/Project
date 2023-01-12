@@ -16,12 +16,21 @@ exports.userSignup = async (req, res) => {
     });
     const find = await User.findOne({ email: req.body.email });
     if (find) {
-      return res.status(400).json("user already exists");
+      return res.status(400).json({
+        status: "400",
+        message: "user already exists",
+      });
     }
     const s = await user.save();
-    res.status(200).json(s);
+    res.status(200).json({
+      status: "200",
+      user: s,
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.userSignin = async (req, res) => {
@@ -35,15 +44,27 @@ exports.userSignin = async (req, res) => {
           process.env.TOKEN_SECRET
         );
         res.header(token, "auth-token");
-        res.json(token);
+        res.status(200).json({
+          status: "200",
+          token: token,
+        });
       } else {
-        res.status(400).json("email or pass incorrect");
+        res.status(400).json({
+          status: "400",
+          message: "email or pass incorrect",
+        });
       }
     } else {
-      res.status(400).json("email or pass incorrect");
+      res.status(400).json({
+        status: "400",
+        message: "email or pass incorrect",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 //Fav Product
@@ -54,9 +75,15 @@ exports.addFavProduct = async (req, res) => {
       productId: req.body.productId,
     });
     await favProd.save();
-    res.status(200).json("Product added to fav");
+    res.status(200).json({
+      status: "200",
+      message: "product added to fav",
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getFavProduct = async (req, res) => {
@@ -65,25 +92,42 @@ exports.getFavProduct = async (req, res) => {
       _id: req.body.id,
     });
     if (favProd) {
-      res.status(200).json(favProd);
+      res.status(200).json({
+        status: "200",
+        favProd: favProd,
+      });
     } else {
-      res.json("No fav products");
+      res.status(404).json({
+        status: "404",
+        message: "no fav prods found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getAllFavProduct = async (req, res) => {
   try {
     const prod = await FavProduct.find({ userId: req.body.userId });
     if (prod) {
-      res.status(200).json(prod);
+      res.status(200).json({
+        status: "200",
+        favProds: prod,
+      });
     } else {
-      console.log("no fave prod");
-      res.status(404).json("no fav products found");
+      res.status(404).json({
+        status: "404",
+        message: "no fav prods found",
+      });
     }
   } catch (err) {
-    res.json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.deleteFavProduct = async (req, res) => {
@@ -92,12 +136,16 @@ exports.deleteFavProduct = async (req, res) => {
       _id: req.body.id,
     });
     if (prod) {
-      res.json(prod);
-    } else {
-      res.status(401).json("Fav Product not found");
+      res.status(200).json({
+        status: "200",
+        prod: prod,
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 //Fav Store
@@ -108,43 +156,72 @@ exports.addFavStore = async (req, res) => {
       storeId: req.body.storeId,
     });
     await favstore.save();
-    res.status(200).json("Store added to fav");
+    res.status(200).json({
+      status: "200",
+      message: "store added to fav",
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getFavStore = async (req, res) => {
   try {
-    console.log(req.body);
     const favstore = await FavStore.find({
       _id: req.body.id,
     });
     if (favstore) {
-      res.status(200).json(favstore);
+      res.status(200).json({
+        status: "200",
+        favstore: favstore,
+      });
     } else {
-      res.json("No fav stores");
+      res.status(404).json({
+        status: "404",
+        message: "fav store not found",
+      });
     }
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.getAllFavStore = async (req, res) => {
   try {
     const store = await FavStore.find({ userId: req.body.userId });
     if (store) {
-      res.status(200).json(store);
+      res.status(200).json({
+        status: "200",
+        stores: store,
+      });
     } else {
-      res.status(404).json("no fav stores found");
+      res.status(404).json({
+        status: "404",
+        message: "no store found",
+      });
     }
   } catch (err) {
-    res.json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
 exports.deleteFavStore = async (req, res) => {
   try {
     const store = await FavStore.deleteOne({ _id: req.body.id });
-    res.status(200).json("store deleted from fav");
+    res.status(200).json({
+      status: "200",
+      message: "store deleted from fav",
+    });
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
   }
 };
