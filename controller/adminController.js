@@ -303,6 +303,27 @@ exports.getAllProducts = async (req, res) => {
     });
   }
 };
+exports.getProdByBranchId = async (req, res) => {
+  try {
+    const products = await Product.find({ branchId: req.body.branchId });
+    if (products) {
+      res.status(200).json({
+        status: "200",
+        products: products,
+      });
+    } else {
+      res.status(404).json({
+        status: "404",
+        message: "no prods found",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+};
 //offermanagement
 // exports.addOffer = async (req, res) => {
 //   upload(req, res, async (err) => {

@@ -13,6 +13,7 @@ const {
   getStoreByCity,
   addParentStore,
   getParentStore,
+  getProdByBranchId,
   getAllParentStore,
   addOfferByBranch,
   addOfferOnStore,
@@ -21,6 +22,7 @@ const {
 } = require("../controller/adminController");
 router.post("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
+router.post("/getProdByBranchId", getProdByBranchId);
 router.post("/addStore", verification, addStore);
 router.post("/getStoreByCity", verification, getStoreByCity);
 router.post("/getStore", verification, getStore);
