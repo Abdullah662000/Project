@@ -124,18 +124,52 @@ exports.getAllParentStore = async (req, res) => {
 };
 //Store Management
 exports.addStore = async (req, res) => {
-  try {
-    const store = await Store.create(req.body);
-    res.status(200).json({
-      status: "200",
-      message: "store saved",
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "400",
-      error: err,
-    });
-  }
+  upload(req, res, async (err) => {
+    if (err) {
+      res.json({
+        status: "400",
+        error: err,
+      });
+    } else {
+      try {
+        let coordinates = JSON.parse(req.body.coordinates);
+        const prod = new Product({
+          storeId: req.body.storeId,
+          branchId: req.body.branchId,
+          image: {
+            data: req.file.filename,
+            contentType: "image/png",
+          },
+          location: {
+            type: "Point",
+            coordinates: coordinates,
+          },
+          locationByCity: req.body.locationByCity,
+          locationByCountry: req.body.locationByCountry,
+          openingTime: req.body.openingTime,
+          closingTime: req.body.closingTime,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          status: req.body.status,
+        });
+
+        const s = await prod.save();
+        res
+          .json({
+            status: "200",
+            product: s,
+            message: "product saved",
+          })
+          .status(200);
+      } catch (err) {
+        console.log(err);
+        res.status(400).json({
+          status: "400",
+          error: err,
+        });
+      }
+    }
+  });
 };
 exports.getStore = async (req, res) => {
   try {
