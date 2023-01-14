@@ -229,6 +229,7 @@ exports.addProduct = async (req, res) => {
       });
     } else {
       try {
+        let coordinates = JSON.parse(req.body.coordinates);
         const prod = new Product({
           name: req.body.name,
           branchId: req.body.branchId,
@@ -237,8 +238,8 @@ exports.addProduct = async (req, res) => {
             contentType: "image/png",
           },
           location: {
-            type: req.body.type,
-            coordinates: req.body.coordinates,
+            type: "Point",
+            coordinates: coordinates,
           },
           orignalPrice: req.body.orignalPrice,
           offerPrice: req.body.offerPrice,
@@ -247,6 +248,7 @@ exports.addProduct = async (req, res) => {
           endDate: req.body.endDate,
           status: req.body.status,
         });
+
         const s = await prod.save();
         res
           .json({
@@ -256,6 +258,7 @@ exports.addProduct = async (req, res) => {
           })
           .status(200);
       } catch (err) {
+        console.log(err);
         res.status(400).json({
           status: "400",
           error: err,
