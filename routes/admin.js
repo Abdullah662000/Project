@@ -19,6 +19,7 @@ const {
   addOfferOnStore,
   addOfferOnProduct,
   getNearbyOffer,
+  getNearbyProducts,
 } = require("../controller/adminController");
 router.post("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
@@ -38,4 +39,5 @@ router.post("/addOfferByBranch", verification, addOfferByBranch);
 router.post("/addOfferOnStore", verification, addOfferOnStore);
 router.post("/addOfferOnProduct", verification, addOfferOnProduct);
 router.post("/getNearbyOffer", verification, getNearbyOffer);
+router.post("/getNearbyProducts", getNearbyProducts);
 module.exports = router;

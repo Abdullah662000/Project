@@ -236,6 +236,10 @@ exports.addProduct = async (req, res) => {
             data: req.file.filename,
             contentType: "image/png",
           },
+          location: {
+            type: req.body.type,
+            coordinates: req.body.coordinates,
+          },
           orignalPrice: req.body.orignalPrice,
           offerPrice: req.body.offerPrice,
           offerName: req.body.offerName,
@@ -318,6 +322,68 @@ exports.getProdByBranchId = async (req, res) => {
       });
     }
   } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+};
+exports.getNearbyProducts = async (req, res) => {
+  try {
+    const { lattitude, longnitude } = req.body;
+    const options = {
+      location: {
+        $geoWithin: {
+          $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+        },
+      },
+    };
+    const products = await Product.find(options);
+    if (products) {
+      res.status(200).json({
+        status: "200",
+        products: products,
+      });
+    } else {
+      res.status(404).json({
+        status: "404",
+        message: "no prods found",
+      });
+    }
+
+    // let products = null;
+    // let store = await Store.find(options);
+    // for (let i = 0; i < store.length; i++) {
+    //   if (store[i].status == false) {
+    //     store.splice(i, 1);
+    //   } else {
+    //     let storeID;
+    //     storeID = JSON.parse(JSON.stringify(store[i]._id));
+    //     let prod = await Product.find({ branchId: storeID });
+    //     console.log(prod);
+    //     if (products == null) {
+    //       products = new Array();
+    //     }
+    //     if (!prod) {
+    //       if (prod[i].status == true) {
+    //         products.push(prod);
+    //       }
+    //     }
+    //   }
+    // }
+    // if (products) {
+    //   res.status(200).json({
+    //     status: "200",
+    //     products: products,
+    //   });
+    // } else {
+    //   res.status(404).json({
+    //     status: "404",
+    //     message: "no products found",
+    //   });
+    // }
+  } catch (err) {
+    console.log(err);
     res.status(400).json({
       status: "400",
       error: err,
@@ -473,7 +539,6 @@ exports.addOfferOnStore = async (req, res) => {
 exports.addOfferOnProduct = async (req, res) => {
   try {
     const prod = await Product.find({ _id: req.body.productId });
-    console.log(prod._id);
     if (prod) {
       const p = await Product.updateOne(
         { _id: req.body.productId },
