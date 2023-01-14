@@ -133,7 +133,7 @@ exports.addStore = async (req, res) => {
     } else {
       try {
         let coordinates = JSON.parse(req.body.coordinates);
-        const prod = new Product({
+        const store = new Store({
           storeId: req.body.storeId,
           branchId: req.body.branchId,
           image: {
@@ -152,13 +152,12 @@ exports.addStore = async (req, res) => {
           endDate: req.body.endDate,
           status: req.body.status,
         });
-
-        const s = await prod.save();
+        const s = await store.save();
         res
           .json({
             status: "200",
             product: s,
-            message: "product saved",
+            message: "store saved",
           })
           .status(200);
       } catch (err) {
