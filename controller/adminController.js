@@ -262,7 +262,8 @@ exports.addProduct = async (req, res) => {
       });
     } else {
       try {
-        let coordinates = JSON.parse(req.body.coordinates);
+        const store = await Store.findById({ _id: req.body.branchId });
+        let coordinates = store.location.coordinates;
         const prod = new Product({
           name: req.body.name,
           branchId: req.body.branchId,
