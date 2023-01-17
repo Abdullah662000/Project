@@ -124,18 +124,51 @@ exports.getAllParentStore = async (req, res) => {
 };
 //Store Management
 exports.addStore = async (req, res) => {
-  try {
-    const store = await Store.create(req.body);
-    res.status(200).json({
-      status: "200",
-      message: "store saved",
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "400",
-      error: err,
-    });
-  }
+  upload(req, res, async (err) => {
+    if (err) {
+      res.json({
+        status: "400",
+        error: err,
+      });
+    } else {
+      try {
+        let coordinates = JSON.parse(req.body.coordinates);
+        const store = new Store({
+          storeId: req.body.storeId,
+          branchId: req.body.branchId,
+          image: {
+            data: req.file.filename,
+            contentType: "image/png",
+          },
+          location: {
+            type: "Point",
+            coordinates: coordinates,
+          },
+          locationByCity: req.body.locationByCity,
+          locationByCountry: req.body.locationByCountry,
+          openingTime: req.body.openingTime,
+          closingTime: req.body.closingTime,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          status: req.body.status,
+        });
+        const s = await store.save();
+        res
+          .json({
+            status: "200",
+            product: s,
+            message: "store saved",
+          })
+          .status(200);
+      } catch (err) {
+        console.log(err);
+        res.status(400).json({
+          status: "400",
+          error: err,
+        });
+      }
+    }
+  });
 };
 exports.getStore = async (req, res) => {
   try {
@@ -229,12 +262,18 @@ exports.addProduct = async (req, res) => {
       });
     } else {
       try {
+        const store = await Store.findById({ _id: req.body.branchId });
+        let coordinates = store.location.coordinates;
         const prod = new Product({
           name: req.body.name,
           branchId: req.body.branchId,
           image: {
             data: req.file.filename,
             contentType: "image/png",
+          },
+          location: {
+            type: "Point",
+            coordinates: coordinates,
           },
           orignalPrice: req.body.orignalPrice,
           offerPrice: req.body.offerPrice,
@@ -243,6 +282,7 @@ exports.addProduct = async (req, res) => {
           endDate: req.body.endDate,
           status: req.body.status,
         });
+
         const s = await prod.save();
         res
           .json({
@@ -252,6 +292,7 @@ exports.addProduct = async (req, res) => {
           })
           .status(200);
       } catch (err) {
+        console.log(err);
         res.status(400).json({
           status: "400",
           error: err,
@@ -318,6 +359,68 @@ exports.getProdByBranchId = async (req, res) => {
       });
     }
   } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+};
+exports.getNearbyProducts = async (req, res) => {
+  try {
+    const { lattitude, longnitude } = req.body;
+    const options = {
+      location: {
+        $geoWithin: {
+          $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+        },
+      },
+    };
+    const products = await Product.find(options);
+    if (products) {
+      res.status(200).json({
+        status: "200",
+        products: products,
+      });
+    } else {
+      res.status(404).json({
+        status: "404",
+        message: "no prods found",
+      });
+    }
+
+    // let products = null;
+    // let store = await Store.find(options);
+    // for (let i = 0; i < store.length; i++) {
+    //   if (store[i].status == false) {
+    //     store.splice(i, 1);
+    //   } else {
+    //     let storeID;
+    //     storeID = JSON.parse(JSON.stringify(store[i]._id));
+    //     let prod = await Product.find({ branchId: storeID });
+    //     console.log(prod);
+    //     if (products == null) {
+    //       products = new Array();
+    //     }
+    //     if (!prod) {
+    //       if (prod[i].status == true) {
+    //         products.push(prod);
+    //       }
+    //     }
+    //   }
+    // }
+    // if (products) {
+    //   res.status(200).json({
+    //     status: "200",
+    //     products: products,
+    //   });
+    // } else {
+    //   res.status(404).json({
+    //     status: "404",
+    //     message: "no products found",
+    //   });
+    // }
+  } catch (err) {
+    console.log(err);
     res.status(400).json({
       status: "400",
       error: err,
@@ -473,7 +576,6 @@ exports.addOfferOnStore = async (req, res) => {
 exports.addOfferOnProduct = async (req, res) => {
   try {
     const prod = await Product.find({ _id: req.body.productId });
-    console.log(prod._id);
     if (prod) {
       const p = await Product.updateOne(
         { _id: req.body.productId },
