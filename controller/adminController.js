@@ -46,9 +46,14 @@ exports.adminSignin = async (req, res) => {
           { _id: user._id },
           process.env.TOKEN_SECRET
         );
+        const { firstName, lastName, email, _id } = user;
         res.header(token, "auth-token");
         res.status(200).json({
           status: "200",
+          firstName,
+          lastName,
+          email,
+          _id,
           token: token,
         });
       } else {
