@@ -4,7 +4,7 @@ const schema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  image: { data: Buffer, contentType: String },
+  image: String,
   branchName: String,
   location: {
     type: {

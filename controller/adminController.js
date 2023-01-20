@@ -129,52 +129,42 @@ exports.getAllParentStore = async (req, res) => {
 };
 //Store Management
 exports.addStore = async (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      res.json({
-        status: "400",
-        error: err,
-      });
-    } else {
-      try {
-        let coordinates = JSON.parse(req.body.coordinates);
-        const store = new Store({
-          storeId: req.body.storeId,
-          branchId: req.body.branchId,
-          image: {
-            data: req.file.filename,
-            contentType: "image/png",
-          },
-          location: {
-            type: "Point",
-            coordinates: coordinates,
-          },
-          locationByCity: req.body.locationByCity,
-          locationByCountry: req.body.locationByCountry,
-          openingTime: req.body.openingTime,
-          closingTime: req.body.closingTime,
-          startDate: req.body.startDate,
-          endDate: req.body.endDate,
-          status: req.body.status,
-        });
-        const s = await store.save();
-        res
-          .json({
-            status: "200",
-            product: s,
-            message: "store saved",
-          })
-          .status(200);
-      } catch (err) {
-        console.log(err);
-        res.status(400).json({
-          status: "400",
-          error: err,
-        });
-      }
-    }
-  });
+  try {
+    let coordinates = JSON.parse(req.body.coordinates);
+    console.log(req.files[0].path);
+    const store = new Store({
+      storeId: req.body.storeId,
+      branchId: req.body.branchId,
+      image: req.files[0].path,
+      location: {
+        type: "Point",
+        coordinates: coordinates,
+      },
+      locationByCity: req.body.locationByCity,
+      locationByCountry: req.body.locationByCountry,
+      openingTime: req.body.openingTime,
+      closingTime: req.body.closingTime,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      status: req.body.status,
+    });
+    const s = await store.save();
+    res
+      .json({
+        status: "200",
+        product: s,
+        message: "store saved",
+      })
+      .status(200);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
 };
+
 exports.getStore = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.id });
@@ -250,62 +240,51 @@ exports.getStoreByLocation = async (req, res) => {
     });
   }
 };
-const Storage = multer.diskStorage({
-  destination: "uploads",
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-const upload = multer({ storage: Storage }).single("testImage");
+// const Storage = multer.diskStorage({
+//   destination: "uploads",
+//   filename: (req, file, cb) => {
+//     cb(null, file.originalname);
+//   },
+// });
+// exports.upload = multer({ storage: Storage }).single("testImage");
 //Products Management
 exports.addProduct = async (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      res.json({
-        status: "400",
-        error: err,
-      });
-    } else {
-      try {
-        const store = await Store.findById({ _id: req.body.branchId });
-        let coordinates = store.location.coordinates;
-        const prod = new Product({
-          name: req.body.name,
-          branchId: req.body.branchId,
-          image: {
-            data: req.file.filename,
-            contentType: "image/png",
-          },
-          location: {
-            type: "Point",
-            coordinates: coordinates,
-          },
-          orignalPrice: req.body.orignalPrice,
-          offerPrice: req.body.offerPrice,
-          offerName: req.body.offerName,
-          startDate: req.body.startDate,
-          endDate: req.body.endDate,
-          status: req.body.status,
-        });
+  try {
+    const store = await Store.findById({ _id: req.body.branchId });
+    let coordinates = store.location.coordinates;
+    const prod = new Product({
+      name: req.body.name,
+      branchId: req.body.branchId,
+      image: req.files[0].path,
+      location: {
+        type: "Point",
+        coordinates: coordinates,
+      },
+      orignalPrice: req.body.orignalPrice,
+      offerPrice: req.body.offerPrice,
+      offerName: req.body.offerName,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      status: req.body.status,
+    });
 
-        const s = await prod.save();
-        res
-          .json({
-            status: "200",
-            product: s,
-            message: "product saved",
-          })
-          .status(200);
-      } catch (err) {
-        console.log(err);
-        res.status(400).json({
-          status: "400",
-          error: err,
-        });
-      }
-    }
-  });
+    const s = await prod.save();
+    res
+      .json({
+        status: "200",
+        product: s,
+        message: "product saved",
+      })
+      .status(200);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
 };
+
 exports.getSpecProduct = async (req, res) => {
   try {
     const prod = await Product.findById({ _id: req.body.id });
