@@ -83,6 +83,7 @@ exports.addFavProduct = async (req, res) => {
     res.status(200).json({
       status: "200",
       message: "product added to fav",
+      favProd
     });
   } catch (err) {
     res.status(400).json({
