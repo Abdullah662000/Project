@@ -13,7 +13,7 @@ const schema = mongoose.Schema({
     },
     coordinates: {
       type: [Number],
-      index: "2dsphere",
+
     },
   },
   locationByCountry: {
@@ -31,4 +31,5 @@ const schema = mongoose.Schema({
   startDate: { type: Date },
   endDate: { type: Date },
 });
+schema.index({ location: "2dsphere" });
 module.exports = mongoose.model("Store", schema);

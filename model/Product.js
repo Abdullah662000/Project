@@ -5,8 +5,15 @@ const schema = mongoose.Schema({
   image: String,
   orignalPrice: { type: Number, required: true },
   location: {
-    type: { type: String },
-    coordinates: []
+    type: {
+      type: String,
+      default: "Point",
+    },
+
+
+    coordinates: {
+      type: [Number]
+    }
   },
   offerPrice: Number,
   offerName: { type: String },

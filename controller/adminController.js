@@ -130,16 +130,13 @@ exports.getAllParentStore = async (req, res) => {
 //Store Management
 exports.addStore = async (req, res) => {
   try {
-    let coordinates = JSON.parse(req.body.coordinates);
-    console.log(req.files[0].path);
+    // let coordinates = JSON.parse(req.body.coordinates);
+    // console.log(req.files[0].path);
     const store = new Store({
       storeId: req.body.storeId,
       branchId: req.body.branchId,
       image: req.files[0].path,
-      location: {
-        type: "Point",
-        coordinates: coordinates,
-      },
+      location: JSON.parse(req.body.location),
       locationByCity: req.body.locationByCity,
       locationByCountry: req.body.locationByCountry,
       openingTime: req.body.openingTime,
@@ -220,14 +217,25 @@ exports.getStoreByCity = async (req, res) => {
 };
 exports.getStoreByLocation = async (req, res) => {
   try {
-    const { lattitude, longnitude } = req.body;
-    const options = {
+    const { lat, lng } = req.body;
+    const query = {
       location: {
-        $geoWithin: {
-          $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lat, lng],
+          },
+          $maxDistance: 1 * 6000,
         },
       },
     };
+    // const options = {
+    //   location: {
+    //     $geoWithin: {
+    //       $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+    //     },
+    //   },
+    // };
     const store = await Store.find(options);
     res.status(200).json({
       status: "200",
@@ -352,15 +360,27 @@ exports.getProdByBranchId = async (req, res) => {
 };
 exports.getNearbyProducts = async (req, res) => {
   try {
-    const { lattitude, longnitude } = req.body;
-    const options = {
+    const { lng, lat } = req.body;
+    const query = {
       location: {
-        $geoWithin: {
-          $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lat, lng],
+          },
+          $maxDistance: 1 * 6000,
         },
       },
     };
-    const products = await Product.find(options);
+
+    // const options = {
+    //   location: {
+    //     $geoWithin: {
+    //       $centerSphere: [[lattitude, longnitude], 3.106 / 3963.2],
+    //     },
+    //   },
+    // };
+    const products = await Product.find(query);
     if (products) {
       res.status(200).json({
         status: "200",
