@@ -5,14 +5,8 @@ const schema = mongoose.Schema({
   image: String,
   orignalPrice: { type: Number, required: true },
   location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-    },
-    coordinates: {
-      type: [Number],
-      index: "2dsphere",
-    },
+    type: { type: String },
+    coordinates: []
   },
   offerPrice: Number,
   offerName: { type: String },
@@ -20,4 +14,5 @@ const schema = mongoose.Schema({
   endDate: { type: Date },
   status: { type: Boolean, default: false },
 });
+schema.index({ location: "2dsphere" });
 module.exports = mongoose.model("Product", schema);
