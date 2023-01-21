@@ -223,7 +223,7 @@ exports.getStoreByLocation = async (req, res) => {
         $nearSphere: {
           $geometry: {
             type: "Point",
-            coordinates: [lat, lng],
+            coordinates: [lng, lat],
           },
           $maxDistance: 1 * 6000,
         },
@@ -361,12 +361,13 @@ exports.getProdByBranchId = async (req, res) => {
 exports.getNearbyProducts = async (req, res) => {
   try {
     const { lng, lat } = req.body;
+    console.log(lng);
     const query = {
       location: {
         $nearSphere: {
           $geometry: {
             type: "Point",
-            coordinates: [lat, lng],
+            coordinates: [lng, lat],
           },
           $maxDistance: 1 * 6000,
         },
