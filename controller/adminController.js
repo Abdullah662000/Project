@@ -260,9 +260,6 @@ exports.addProduct = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.branchId });
     let coordinates = store.location.coordinates;
-    console.log(req.body);
-    console.log(typeof req.body.location);
-    console.log(JSON.parse(req.body.location));
     const prod = new Product({
       name: req.body.name,
       branchId: req.body.branchId,
