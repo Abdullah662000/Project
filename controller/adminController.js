@@ -258,23 +258,23 @@ exports.getStoreByLocation = async (req, res) => {
 //Products Management
 exports.addProduct = async (req, res) => {
   try {
-    // const store = await Store.findById({ _id: req.body.branchId });
-    // let coordinates = store.location.coordinates;
+    const store = await Store.findById({ _id: req.body.branchId });
+    let coordinates = store.location.coordinates;
     console.log(req.body);
-    console.log(typeof (req.body.location))
+    console.log(typeof req.body.location);
     console.log(JSON.parse(req.body.location));
     const prod = new Product({
       name: req.body.name,
       branchId: req.body.branchId,
       image: req.files[0].path,
-      location: JSON.parse(req.body.location),
+      location: coordinates,
       orignalPrice: req.body.orignalPrice,
       offerPrice: req.body.offerPrice,
       offerName: req.body.offerName,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
       status: req.body.status,
-      orignalPrice: req.body.orignalPrice
+      orignalPrice: req.body.orignalPrice,
     });
 
     const s = await prod.save();

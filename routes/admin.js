@@ -61,6 +61,6 @@ router.get("/getAllProducts", getAllProducts);
 router.post("/addOfferByBranch", verification, addOfferByBranch);
 router.post("/addOfferOnStore", verification, addOfferOnStore);
 router.post("/addOfferOnProduct", verification, addOfferOnProduct);
-router.post("/getNearbyOffer", verification, getNearbyOffer);
+router.post("/getNearbyOffer", getNearbyOffer);
 router.post("/getNearbyProducts", getNearbyProducts);
 module.exports = router;
