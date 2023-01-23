@@ -7,13 +7,11 @@ const schema = mongoose.Schema({
   location: {
     type: {
       type: String,
-      default: "Point",
+      enum: ["Point"],
     },
-
-
     coordinates: {
-      type: [Number]
-    }
+      type: [Number],
+    },
   },
   offerPrice: Number,
   offerName: { type: String },

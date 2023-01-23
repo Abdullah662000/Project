@@ -10,11 +10,9 @@ const schema = mongoose.Schema({
     type: {
       type: String,
       enum: ["Point"],
+      default: "Point",
     },
-    coordinates: {
-      type: [Number],
-
-    },
+    coordinates: [Number],
   },
   locationByCountry: {
     type: String,

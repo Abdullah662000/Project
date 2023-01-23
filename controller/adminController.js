@@ -132,11 +132,14 @@ exports.addStore = async (req, res) => {
   try {
     // let coordinates = JSON.parse(req.body.coordinates);
     // console.log(req.files[0].path);
+    console.log(req.body.coordinates);
+    const [lat, long] = JSON.parse(req.body.coordinates);
+    let coordinate = JSON.parse(req.body.coordinates);
     const store = new Store({
       storeId: req.body.storeId,
       branchId: req.body.branchId,
       image: req.files[0].path,
-      location: JSON.parse(req.body.location),
+      location: { coordinates: [lat, long] },
       locationByCity: req.body.locationByCity,
       locationByCountry: req.body.locationByCountry,
       openingTime: req.body.openingTime,
@@ -264,7 +267,9 @@ exports.addProduct = async (req, res) => {
       name: req.body.name,
       branchId: req.body.branchId,
       image: req.files[0].path,
-      location: coordinates,
+      location: {
+        coordinates: coordinates,
+      },
       orignalPrice: req.body.orignalPrice,
       offerPrice: req.body.offerPrice,
       offerName: req.body.offerName,
