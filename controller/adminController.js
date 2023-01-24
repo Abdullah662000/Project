@@ -132,7 +132,6 @@ exports.addStore = async (req, res) => {
   try {
     // let coordinates = JSON.parse(req.body.coordinates);
     // console.log(req.files[0].path);
-    console.log(req.body.coordinates);
     const [lat, long] = JSON.parse(req.body.coordinates);
     let coordinate = JSON.parse(req.body.coordinates);
     const store = new Store({
