@@ -14,6 +14,7 @@ const schema = mongoose.Schema({
     },
   },
   offerPrice: Number,
+  offerImage: String,
   offerName: { type: String },
   startDate: { type: Date },
   endDate: { type: Date },

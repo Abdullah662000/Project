@@ -25,6 +25,7 @@ const schema = mongoose.Schema({
   openingTime: { type: Date },
   closingTime: { type: Date },
   offerName: { type: String },
+  offerImage: String,
   status: { type: Boolean, default: false },
   startDate: { type: Date },
   endDate: { type: Date },

@@ -58,9 +58,24 @@ router.get("/getAllParentStore", verification, getAllParentStore);
 router.post("/addProduct", verification, upload.array("files"), addProduct);
 router.post("/getSpecProduct", verification, getSpecProduct);
 router.get("/getAllProducts", getAllProducts);
-router.post("/addOfferByBranch", verification, addOfferByBranch);
-router.post("/addOfferOnStore", verification, addOfferOnStore);
-router.post("/addOfferOnProduct", verification, addOfferOnProduct);
+router.post(
+  "/addOfferByBranch",
+  verification,
+  upload.array("files"),
+  addOfferByBranch
+);
+router.post(
+  "/addOfferOnStore",
+  verification,
+  upload.array("files"),
+  addOfferOnStore
+);
+router.post(
+  "/addOfferOnProduct",
+  verification,
+  upload.array("files"),
+  addOfferOnProduct
+);
 router.post("/getNearbyOffer", getNearbyOffer);
 router.post("/getNearbyProducts", getNearbyProducts);
 module.exports = router;

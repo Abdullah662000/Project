@@ -476,19 +476,20 @@ exports.getNearbyProducts = async (req, res) => {
 exports.addOfferByBranch = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.id });
-    //console.log(store);
     if (store.status == false) {
       const s = await Store.updateOne(
         { _id: store._id },
         {
           $set: {
             offerName: req.body.offerName,
+            offerImage: req.files[0].path,
             status: true,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
           },
         }
       );
+
       var endDate = new Date(req.body.endDate);
       var day = endDate.getDate();
       var month = endDate.getMonth();
@@ -511,7 +512,7 @@ exports.addOfferByBranch = async (req, res) => {
     } else {
       res.json({
         status: "400",
-        message: "no store found",
+        message: "offer already active",
       });
     }
   } catch (err) {
@@ -530,6 +531,7 @@ exports.addOfferOnStore = async (req, res) => {
         {
           $set: {
             offerName: req.body.offerName,
+            offerImage: req.files[0].path,
             status: true,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
@@ -589,6 +591,7 @@ exports.addOfferOnProduct = async (req, res) => {
         {
           $set: {
             offerName: req.body.offerName,
+            offerImage: req.files[0].path,
             status: true,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
