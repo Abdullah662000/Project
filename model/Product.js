@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema({
   name: { type: String, required: true },
-  branchId: { type: mongoose.Types.ObjectId, required: true },
+  branchId: { type: String, required: true },
   image: String,
   orignalPrice: { type: Number, required: true },
   location: {

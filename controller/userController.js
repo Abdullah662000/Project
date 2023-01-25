@@ -3,6 +3,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const FavProduct = require("../model/FavProduct");
 const FavStore = require("../model/FavStore");
+const productModel = require("../model/Product");
+const mongoose = require("mongoose");
+const ObjectId = require('mongodb').ObjectID
 //User Sign in Sign up
 exports.userSignup = async (req, res) => {
   try {
@@ -117,19 +120,47 @@ exports.getFavProduct = async (req, res) => {
 };
 exports.getAllFavProduct = async (req, res) => {
   try {
-    const prod = await FavProduct.find({ userId: req.body.userId });
-    if (prod) {
+    // const prod = await FavProduct.find({ userId: req.body.userId });
+    // console.log(prod);
+    const prod1 = await FavProduct.aggregate([
+      {
+        $match: {
+          userId: req.body.userId
+        }
+      },
+      {
+        $lookup:
+        {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'inventory_docs'
+        }
+      }
+    ])
+    console.log(prod1);
+    if (prod1.length > 0) {
+      // for (let i = 0; i < prod.length; i++) {
+      //   let data = await productModel.findOne({ branchId: prod[i].productId });
+      //   console.log(data);
+      //   if (data !== null) {
+      //     prod[i].productDetails = data;
+      //   }
+      // }
+      // console.log(prod);
       res.status(200).json({
         status: "200",
-        favProds: prod,
+        favProds: prod1,
       });
     } else {
+
       res.status(404).json({
         status: "404",
         message: "no fav prods found",
       });
     }
   } catch (err) {
+    console.log(err);
     res.status(400).json({
       status: "400",
       error: err,
@@ -165,6 +196,7 @@ exports.addFavStore = async (req, res) => {
     res.status(200).json({
       status: "200",
       message: "store added to fav",
+      favstore
     });
   } catch (err) {
     res.status(400).json({
@@ -198,11 +230,27 @@ exports.getFavStore = async (req, res) => {
 };
 exports.getAllFavStore = async (req, res) => {
   try {
-    const store = await FavStore.find({ userId: req.body.userId });
-    if (store) {
+    // const store = await FavStore.find({ userId: req.body.userId });
+    const store1 = await FavStore.aggregate([
+      {
+        $match: {
+          userId: req.body.userId
+        }
+      },
+      {
+        $lookup:
+        {
+          from: 'stores',
+          localField: 'storeId',
+          foreignField: '_id',
+          as: 'inventory_docs'
+        }
+      }
+    ])
+    if (store1.length > 0) {
       res.status(200).json({
         status: "200",
-        stores: store,
+        stores: store1,
       });
     } else {
       res.status(404).json({

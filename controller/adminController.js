@@ -82,6 +82,7 @@ exports.addParentStore = async (req, res) => {
     res.status(200).json({
       status: "200",
       message: "store saved",
+      store,
     });
   } catch (err) {
     res.status(400).json({
@@ -132,13 +133,13 @@ exports.addStore = async (req, res) => {
   try {
     // let coordinates = JSON.parse(req.body.coordinates);
     // console.log(req.files[0].path);
-    const [lat, long] = JSON.parse(req.body.coordinates);
-    let coordinate = JSON.parse(req.body.coordinates);
+    // const [lat, long] = JSON.parse(req.body.coordinates);
+    // let coordinate = JSON.parse(req.body.coordinates);
     const store = new Store({
       storeId: req.body.storeId,
       branchId: req.body.branchId,
       image: req.files[0].path,
-      location: { coordinates: [lat, long] },
+      location: JSON.parse(req.body.location),
       locationByCity: req.body.locationByCity,
       locationByCountry: req.body.locationByCountry,
       openingTime: req.body.openingTime,
@@ -261,14 +262,12 @@ exports.getStoreByLocation = async (req, res) => {
 exports.addProduct = async (req, res) => {
   try {
     const store = await Store.findById({ _id: req.body.branchId });
-    let coordinates = store.location.coordinates;
+    // let coordinates = store.location.coordinates;
     const prod = new Product({
       name: req.body.name,
       branchId: req.body.branchId,
       image: req.files[0].path,
-      location: {
-        coordinates: coordinates,
-      },
+      location: JSON.parse(req.body.location),
       orignalPrice: req.body.orignalPrice,
       offerPrice: req.body.offerPrice,
       offerName: req.body.offerName,

@@ -48,15 +48,15 @@ router.post("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
 router.post("/getProdByBranchId", verification, getProdByBranchId);
 router.post("/addStore", verification, upload.array("files"), addStore); //send image from frontend
-router.post("/getStoreByCity", verification, getStoreByCity);
-router.post("/getStore", verification, getStore);
+router.post("/getStoreByCity", getStoreByCity);
+router.post("/getStore", getStore);
 router.get("/getAllStores", getAllStores);
-router.post("/getStoreByLocation", verification, getStoreByLocation);
+router.post("/getStoreByLocation", getStoreByLocation);
 router.post("/addParentStore", addParentStore);
-router.post("/getParentStore", verification, getParentStore);
-router.get("/getAllParentStore", verification, getAllParentStore);
+router.post("/getParentStore", getParentStore);
+router.get("/getAllParentStore", getAllParentStore);
 router.post("/addProduct", verification, upload.array("files"), addProduct);
-router.post("/getSpecProduct", verification, getSpecProduct);
+router.post("/getSpecProduct", getSpecProduct);
 router.get("/getAllProducts", getAllProducts);
 router.post(
   "/addOfferByBranch",
