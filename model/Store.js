@@ -1,34 +1,8 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema({
-  storeId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-  },
-  image: String,
-  branchName: String,
-  location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      default: "Point",
-    },
-    coordinates: [Number],
-  },
-  locationByCountry: {
-    type: String,
-    required: true,
-  },
-  locationByCity: {
-    type: String,
-    required: true,
-  },
-  openingTime: { type: Date },
-  closingTime: { type: Date },
-  offerName: { type: String },
-  offerImage: String,
-  status: { type: Boolean, default: false },
-  startDate: { type: Date },
-  endDate: { type: Date },
+  storeName: { type: String, required: true },
+
+  storeImage: String,
+
 });
-schema.index({ location: "2dsphere" });
 module.exports = mongoose.model("Store", schema);

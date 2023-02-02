@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const FavProduct = require("../model/FavProduct");
 const FavStore = require("../model/FavStore");
+const Deals = require("../model/Deal")
+const Offers = require("../model/Offers")
 const productModel = require("../model/Product");
 const mongoose = require("mongoose");
 const ObjectId = require('mongodb').ObjectID
@@ -36,6 +38,146 @@ exports.userSignup = async (req, res) => {
     });
   }
 };
+
+exports.getNearbyDealsStores = async (req, res) => {
+  try {
+    const { lng, lat } = req.body;
+    console.log(lng);
+    const query = {
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+          $maxDistance: 1 * 6000,
+        },
+      },
+      status: true
+    };
+    const deals = await Deals.find(query).populate("storeId");
+
+    // const result = await findDeals(deals);
+
+    // console.log(result);
+    if (deals.length > 0) {
+      res.status(200).json({
+        status: "200",
+        deals: deals,
+      });
+    } else {
+      res.status(200).json({
+        status: "200",
+        message: "no deals found",
+      });
+    }
+  }
+  catch (e) {
+    res.status(400).json({
+      status: "404",
+      message: "no deals found",
+    });
+  }
+
+
+}
+
+exports.getNearbyDealsBranches = async (req, res) => {
+  try {
+    const { lng, lat, dealId } = req.body;
+    console.log(lng);
+    const query = {
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+          $maxDistance: 1 * 6000,
+        },
+      },
+      dealId: dealId
+    };
+    const deals = await Offers.find(query).populate("branchId").populate("productId");
+    // const result = await findDeals(deals);
+
+    console.log(deals);
+    if (deals.length > 0) {
+      res.status(200).json({
+        status: "200",
+        deals: deals,
+      });
+    } else {
+      res.status(200).json({
+        status: "200",
+        message: "no deals found",
+      });
+    }
+  }
+  catch (e) {
+    res.status(400).json({
+      status: "404",
+      message: "no deals found",
+    });
+  }
+
+
+}
+
+exports.getNearbyDealsProducts = async (req, res) => {
+  try {
+    const { lng, lat } = req.body;
+    console.log(lng);
+    const query = {
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+          $maxDistance: 1 * 6000,
+        },
+      },
+      status: true
+    };
+    const deals = await Deals.find(query);
+    const result = await findDeals(deals);
+
+    console.log(result);
+    if (result.length > 0) {
+      res.status(200).json({
+        status: "200",
+        deals: result,
+      });
+    } else {
+      res.status(200).json({
+        status: "200",
+        message: "no deals found",
+      });
+    }
+  }
+  catch (e) {
+    res.status(400).json({
+      status: "404",
+      message: "no deals found",
+    });
+  }
+
+
+}
+
+async function findDeals(deals) {
+
+  const data = await Promise.all(deals.map(async (ele) => {
+    return await Offers.find({ dealId: ele._id }).populate("productId");
+
+  }))
+  return data;
+  // console.log(data);
+
+
+
+}
 exports.userSignin = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });

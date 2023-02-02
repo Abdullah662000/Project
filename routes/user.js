@@ -12,6 +12,10 @@ const {
   deleteFavProduct,
   getAllFavStore,
   deleteFavStore,
+
+  getNearbyDealsProducts,
+  getNearbyDealsStores,
+  getNearbyDealsBranches,
 } = require("../controller/userController");
 const verification = require("../controller/verification");
 router.post("/userSignup", userSignup);
@@ -24,4 +28,7 @@ router.post("/deleteFavProd", verification, deleteFavProduct);
 router.post("/deleteFavStore", verification, deleteFavStore);
 router.post("/getFavStore", verification, getFavStore);
 router.post("/userSignin", userSignin);
+router.put("/getNearbyDealsProducts", getNearbyDealsProducts);
+router.put("/getNearbyDealsStores", getNearbyDealsStores);
+router.put("/getNearbyDealsBranches", getNearbyDealsBranches);
 module.exports = router;

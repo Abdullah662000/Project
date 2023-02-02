@@ -22,6 +22,9 @@ const {
   addOfferOnProduct,
   getNearbyOffer,
   getNearbyProducts,
+  addDeal,
+  addOffer,
+  addProductToBranchOfStore,
 } = require("../controller/adminController");
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -47,15 +50,15 @@ let upload = multer({ storage, fileFilter });
 router.post("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
 router.post("/getProdByBranchId", verification, getProdByBranchId);
-router.post("/addStore", verification, upload.array("files"), addStore); //send image from frontend
+router.post("/addBranch", upload.single("files"), addStore); //send image from frontend
 router.post("/getStoreByCity", getStoreByCity);
 router.post("/getStore", getStore);
 router.get("/getAllStores", getAllStores);
 router.post("/getStoreByLocation", getStoreByLocation);
-router.post("/addParentStore", addParentStore);
+router.post("/addStore", upload.single("files"), addParentStore);
 router.post("/getParentStore", getParentStore);
 router.get("/getAllParentStore", getAllParentStore);
-router.post("/addProduct", verification, upload.array("files"), addProduct);
+router.post("/addProduct", upload.single("files"), addProduct);
 router.post("/getSpecProduct", getSpecProduct);
 router.get("/getAllProducts", getAllProducts);
 router.post(
@@ -71,11 +74,11 @@ router.post(
   addOfferOnStore
 );
 router.post(
-  "/addOfferOnProduct",
-  verification,
-  upload.array("files"),
-  addOfferOnProduct
+  "/addOffer",
+  addOffer
 );
+router.put("/addProductToBranch", addProductToBranchOfStore);
+router.put("/addDeal", upload.single('files'), addDeal)
 router.post("/getNearbyOffer", getNearbyOffer);
 router.post("/getNearbyProducts", getNearbyProducts);
 module.exports = router;

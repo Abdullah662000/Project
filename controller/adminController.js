@@ -1,13 +1,14 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const Store = require("../model/Store");
-const ParentStore = require("../model/ParentStore");
+const Store = require("../model/Branch");
+const ParentStore = require("../model/Store");
 const Product = require("../model/Product");
 const Admin = require("../model/Admin");
 const multer = require("multer");
-//
+const Deal = require("../model/Deal")
 const Offers = require("../model/Offers");
 const cron = require("node-cron");
+const ProductInBranch = require("../model/ProductInBranch");
 const { find, findById, updateOne } = require("../model/Store");
 //Admin login Signup
 exports.adminSignup = async (req, res) => {
@@ -78,13 +79,21 @@ exports.adminSignin = async (req, res) => {
 // parent store mangement
 exports.addParentStore = async (req, res) => {
   try {
-    const store = await ParentStore.create(req.body);
+    console.log(
+      "ddd"
+    );
+    const obj = {
+      storeImage: req.file.path,
+      storeName: req.body.storeName
+    }
+    const store = await ParentStore.create({ ...obj });
     res.status(200).json({
       status: "200",
       message: "store saved",
       store,
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({
       status: "400",
       error: err,
@@ -135,25 +144,26 @@ exports.addStore = async (req, res) => {
     // console.log(req.files[0].path);
     // const [lat, long] = JSON.parse(req.body.coordinates);
     // let coordinate = JSON.parse(req.body.coordinates);
-    const store = new Store({
-      storeId: req.body.storeId,
-      branchId: req.body.branchId,
-      image: req.files[0].path,
-      location: JSON.parse(req.body.location),
-      locationByCity: req.body.locationByCity,
-      locationByCountry: req.body.locationByCountry,
-      openingTime: req.body.openingTime,
-      closingTime: req.body.closingTime,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      status: req.body.status,
-    });
-    const s = await store.save();
+    // const store = new Store({
+    //   storeId: req.body.storeId,
+    //   branchId: req.body.branchId,
+    //   image: req.files[0].path,
+    //   location: JSON.parse(req.body.location),
+    //   locationByCity: req.body.locationByCity,
+    //   locationByCountry: req.body.locationByCountry,
+    //   openingTime: req.body.openingTime,
+    //   closingTime: req.body.closingTime,
+    //   startDate: req.body.startDate,
+    //   endDate: req.body.endDate,
+    //   status: req.body.status,
+    // });
+
+    const s = await Store.create({ ...req.body });
     res
       .json({
         status: "200",
         product: s,
-        message: "store saved",
+        message: "branch saved",
       })
       .status(200);
   } catch (err) {
@@ -259,25 +269,59 @@ exports.getStoreByLocation = async (req, res) => {
 // });
 // exports.upload = multer({ storage: Storage }).single("testImage");
 //Products Management
+
+exports.addDeal = async (req, res) => {
+  try {
+    console.log(JSON.parse(req.body.location));
+
+    const obj = {
+      ...req.body,
+      location: JSON.parse(req.body.location),
+      image: req.file.path
+    }
+    const resp = await Deal.create({ ...obj })
+
+    if (resp) {
+      res.status(200).json({
+        status: "200",
+        resp,
+        message: 'Deal Created'
+      })
+    }
+  }
+  catch (e) {
+    res.status(400).json({
+      e,
+      message: "Deal Not Created"
+    })
+  }
+
+}
+exports.addProductToBranchOfStore = async (req, res) => {
+  try {
+    const s = await ProductInBranch.create({ ...req.body });
+    res
+      .json({
+        status: "200",
+        product: s,
+        message: "product saved to branch",
+      })
+      .status(200);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+}
+
+
+
 exports.addProduct = async (req, res) => {
   try {
-    const store = await Store.findById({ _id: req.body.branchId });
-    // let coordinates = store.location.coordinates;
-    const prod = new Product({
-      name: req.body.name,
-      branchId: req.body.branchId,
-      image: req.files[0].path,
-      location: JSON.parse(req.body.location),
-      orignalPrice: req.body.orignalPrice,
-      offerPrice: req.body.offerPrice,
-      offerName: req.body.offerName,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      status: req.body.status,
-      orignalPrice: req.body.orignalPrice,
-    });
 
-    const s = await prod.save();
+    const s = await Product.create({ ...req.body, image: req.file.path });
     res
       .json({
         status: "200",
@@ -581,32 +625,20 @@ exports.addOfferOnStore = async (req, res) => {
 //     res.status("400").json(err);
 //   }
 // };
-exports.addOfferOnProduct = async (req, res) => {
+exports.addOffer = async (req, res) => {
   try {
-    const prod = await Product.find({ _id: req.body.productId });
-    if (prod) {
-      const p = await Product.updateOne(
-        { _id: req.body.productId },
-        {
-          $set: {
-            offerName: req.body.offerName,
-            offerImage: req.files[0].path,
-            status: true,
-            startDate: req.body.startDate,
-            endDate: req.body.endDate,
-          },
-        }
-      );
+
+
+    const p = await Offers.create({ ...req.body })
+    if (p) {
+
+
       res.status(200).json({
         status: "200",
         product: p,
       });
-    } else {
-      res.status(400).json({
-        status: "400",
-        message: "product not found",
-      });
     }
+
   } catch (err) {
     res.status(400).json({
       status: "400",
