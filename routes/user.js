@@ -16,6 +16,8 @@ const {
   getNearbyDealsProducts,
   getNearbyDealsStores,
   getNearbyDealsBranches,
+  searchProductFormDifferentStores,
+  getBranchesOnBaseOfProductAndStore,
 } = require("../controller/userController");
 const verification = require("../controller/verification");
 router.post("/userSignup", userSignup);
@@ -31,4 +33,6 @@ router.post("/userSignin", userSignin);
 router.put("/getNearbyDealsProducts", getNearbyDealsProducts);
 router.put("/getNearbyDealsStores", getNearbyDealsStores);
 router.put("/getNearbyDealsBranches", getNearbyDealsBranches);
+router.put("/searchProductsFromDifferentStores", searchProductFormDifferentStores);
+router.put("/getBranchesOnBaseOfProductAndStore", getBranchesOnBaseOfProductAndStore);
 module.exports = router;

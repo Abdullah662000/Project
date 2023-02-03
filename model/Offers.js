@@ -31,7 +31,8 @@ const schema = mongoose.Schema({
   },
   storeId: {
     type: mongoose.Types.ObjectId,
-    required: true
+    required: true,
+    ref: "Store"
   },
 });
 schema.index({ location: "2dsphere" });

@@ -7,6 +7,11 @@ const Deals = require("../model/Deal")
 const Offers = require("../model/Offers")
 const productModel = require("../model/Product");
 const mongoose = require("mongoose");
+const Product = require("../model/Product");
+const ProductInBranch = require("../model/ProductInBranch");
+const Branch = require("../model/Branch");
+const Deal = require("../model/Deal");
+
 const ObjectId = require('mongodb').ObjectID
 //User Sign in Sign up
 exports.userSignup = async (req, res) => {
@@ -38,6 +43,126 @@ exports.userSignup = async (req, res) => {
     });
   }
 };
+exports.getBranchesOnBaseOfProductAndStore = async (req, res) => {
+
+  try {
+    const products = await Offers.find({ ...req.body }).populate("branchId").populate("productId");
+
+    // console.log(result);
+    if (products.length > 0) {
+      res.status(200).json({
+        "message": "Found",
+        status: "200",
+        products,
+
+      })
+    }
+    else {
+      res.status(200).json({
+        "message": "Products Not Found",
+        status: "200",
+      })
+    }
+
+  }
+  catch (e) {
+    console.log(e);
+    res.status(400).json({
+
+      error: e.message
+    })
+  }
+
+}
+
+
+
+
+
+exports.searchProductFormDifferentStores = async (req, res) => {
+
+  try {
+    const products = await Product.find({ "name": { "$regex": req.body.name, "$options": "i" } });
+    const result = await searchProducts(products);
+    // console.log(result);
+    if (products.length > 0) {
+      res.status(200).json({
+        "message": "Found",
+        status: "200",
+
+        result
+      })
+    }
+    else {
+      res.status(200).json({
+        "message": "Products Not Found",
+        status: "200",
+      })
+    }
+
+  }
+  catch (e) {
+    console.log(e);
+    res.status(400).json({
+
+      error: e.message
+    })
+  }
+
+}
+async function searchProducts(products) {
+  let obj = [];
+  const data = await Promise.all(products.map(async (ele) => {
+    const result = await ProductInBranch.find({ productId: ele._id });
+    for (let i of result) {
+
+      obj.push(i);
+    }
+
+
+  }))
+  console.log(obj);
+  let arry = [];
+
+
+  const data1 = await Promise.all(obj.map(async (ele) => {
+    // return ele.branchId.storeId;
+    const result = await Branch.findOne({ _id: ele.branchId });
+    console.log("123");
+    // console.log(e);
+    if (!arry.find(el => el?.storeId.toString() === result?.storeId.toString() && el?.productId.toString() === ele?.productId.toString())) {
+      arry.push({ storeId: result?.storeId.toString(), productId: ele?.productId.toString() });
+    }
+    // return result?.storeId;
+
+  }))
+  console.log(arry);
+
+  // console.log(data1);
+  let arry1 = [];
+  const data3 = await Promise.all(arry.map(async (ele, i) => {
+
+    const result = await Deal.findOne({ status: true, storeId: ele.storeId });
+    return !!result && arry[i]
+    // return await ProductInBranch.find({ productId: ele._id }).populate("branchId");
+
+  }))
+  // console.log(data3);
+  const data4 = await Promise.all(data3.map(async (ele) => {
+
+    const result = await Offers.findOne({ storeId: ele.storeId, productId: ele.productId }).populate("productId").populate("storeId");
+    return !!result && result
+    // return await ProductInBranch.find({ productId: ele._id }).populate("branchId");
+
+  }))
+  // console.log(data4);
+  // console.log(data1);
+  return data4;
+  // console.log(data);
+
+
+
+}
 
 exports.getNearbyDealsStores = async (req, res) => {
   try {
@@ -57,7 +182,7 @@ exports.getNearbyDealsStores = async (req, res) => {
     };
     const deals = await Deals.find(query).populate("storeId");
 
-    // const result = await findDeals(deals);
+
 
     // console.log(result);
     if (deals.length > 0) {
@@ -73,6 +198,7 @@ exports.getNearbyDealsStores = async (req, res) => {
     }
   }
   catch (e) {
+    console.log(e);
     res.status(400).json({
       status: "404",
       message: "no deals found",
@@ -81,6 +207,7 @@ exports.getNearbyDealsStores = async (req, res) => {
 
 
 }
+
 
 exports.getNearbyDealsBranches = async (req, res) => {
   try {
@@ -98,7 +225,7 @@ exports.getNearbyDealsBranches = async (req, res) => {
       },
       dealId: dealId
     };
-    const deals = await Offers.find(query).populate("branchId").populate("productId");
+    const deals = await Offers.find(query).populate("branchId").populate({ path: "productId", populate: { path: "categoryId" } });
     // const result = await findDeals(deals);
 
     console.log(deals);

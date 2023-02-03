@@ -3,7 +3,8 @@ const schema = mongoose.Schema({
   name: { type: String, required: true },
   categoryId: {
     type: mongoose.Types.ObjectId,
-    required: true
+    required: true,
+    ref: "category"
   },
 
   image: String,

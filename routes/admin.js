@@ -25,6 +25,7 @@ const {
   addDeal,
   addOffer,
   addProductToBranchOfStore,
+  addCategory,
 } = require("../controller/adminController");
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -81,4 +82,5 @@ router.put("/addProductToBranch", addProductToBranchOfStore);
 router.put("/addDeal", upload.single('files'), addDeal)
 router.post("/getNearbyOffer", getNearbyOffer);
 router.post("/getNearbyProducts", getNearbyProducts);
+router.put("/addCategory", addCategory);
 module.exports = router;

@@ -10,6 +10,7 @@ const Offers = require("../model/Offers");
 const cron = require("node-cron");
 const ProductInBranch = require("../model/ProductInBranch");
 const { find, findById, updateOne } = require("../model/Store");
+const Category = require("../model/Category");
 //Admin login Signup
 exports.adminSignup = async (req, res) => {
   try {
@@ -269,7 +270,29 @@ exports.getStoreByLocation = async (req, res) => {
 // });
 // exports.upload = multer({ storage: Storage }).single("testImage");
 //Products Management
+exports.addCategory = async (req, res) => {
+  try {
 
+
+
+    const resp = await Category.create({ ...req.body })
+
+    if (resp) {
+      res.status(200).json({
+        status: "200",
+        resp,
+        message: 'Category Added'
+      })
+    }
+  }
+  catch (e) {
+    console.log(e);
+    res.status(400).json({
+      e,
+      message: "Category Not Added"
+    })
+  }
+}
 exports.addDeal = async (req, res) => {
   try {
     console.log(JSON.parse(req.body.location));
@@ -290,6 +313,7 @@ exports.addDeal = async (req, res) => {
     }
   }
   catch (e) {
+    console.log(e);
     res.status(400).json({
       e,
       message: "Deal Not Created"
