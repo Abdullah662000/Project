@@ -3,6 +3,7 @@ const schema = mongoose.Schema({
   storeId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: "Store"
   },
 
   branchName: String,

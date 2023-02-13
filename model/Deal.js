@@ -22,7 +22,7 @@ const schema = mongoose.Schema({
     status: {
         type: Boolean,
         required: true,
-        default: false
+        default: true
     },
     toDate: {
         type: Date,

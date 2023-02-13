@@ -22,7 +22,8 @@ const schema = mongoose.Schema({
   },
   dealId: {
     type: mongoose.Types.ObjectId,
-    required: true
+    required: true,
+    ref: "deals"
   },
   productId: {
     type: mongoose.Types.ObjectId,
@@ -34,6 +35,10 @@ const schema = mongoose.Schema({
     required: true,
     ref: "Store"
   },
+  percentage: {
+    type: Number,
+
+  }
 });
 schema.index({ location: "2dsphere" });
 module.exports = mongoose.model("Offers", schema);

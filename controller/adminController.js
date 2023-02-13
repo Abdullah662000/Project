@@ -5,12 +5,14 @@ const ParentStore = require("../model/Store");
 const Product = require("../model/Product");
 const Admin = require("../model/Admin");
 const multer = require("multer");
-const Deal = require("../model/Deal")
+// const Deal = require("../model/Deal")
 const Offers = require("../model/Offers");
 const cron = require("node-cron");
-const ProductInBranch = require("../model/ProductInBranch");
+const ProductInStore = require("../model/ProductInStore");
 const { find, findById, updateOne } = require("../model/Store");
 const Category = require("../model/Category");
+const Branch = require("../model/Branch");
+const Deal = require("../model/Deal");
 //Admin login Signup
 exports.adminSignup = async (req, res) => {
   try {
@@ -38,6 +40,59 @@ exports.adminSignup = async (req, res) => {
     });
   }
 };
+exports.getCategories = async (req, res) => {
+  try {
+
+    const find = await Category.find();
+    if (find.length > 0) {
+      res.status(200).json({
+        status: "200",
+        categories: find,
+      });
+    }
+    else {
+      res.status(200).json({
+        status: "200",
+        message: "not found",
+        categories: find,
+      });
+    }
+
+
+  } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+};
+exports.getBranchesByStoreId = async (req, res) => {
+  try {
+
+    const find = await Branch.find({ storeId: req.params.storeId });
+    if (find.length > 0) {
+      res.status(200).json({
+        status: "200",
+        branches: find,
+      });
+    }
+    else {
+      res.status(200).json({
+        status: "200",
+        message: "not found",
+        branches: find,
+      });
+    }
+
+
+  } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+};
+
 exports.adminSignin = async (req, res) => {
   try {
     const user = await Admin.findOne({ email: req.body.email });
@@ -81,10 +136,14 @@ exports.adminSignin = async (req, res) => {
 exports.addParentStore = async (req, res) => {
   try {
     console.log(
-      "ddd"
+      req.file.path
     );
+    let text = req.file.path
+    let text2 = text.split("uploads")
+    let text3 = "uploads\\" + text2[1];
+    console.log(text3);
     const obj = {
-      storeImage: req.file.path,
+      storeImage: text3,
       storeName: req.body.storeName
     }
     const store = await ParentStore.create({ ...obj });
@@ -158,7 +217,7 @@ exports.addStore = async (req, res) => {
     //   endDate: req.body.endDate,
     //   status: req.body.status,
     // });
-
+    // console.log(req.file.path);
     const s = await Store.create({ ...req.body });
     res
       .json({
@@ -199,11 +258,78 @@ exports.getStore = async (req, res) => {
 };
 exports.getAllStores = async (req, res) => {
   try {
-    const stores = await Store.find();
+    const stores = await Store.find().populate("storeId");
     res.status(200).json({
       status: "200",
       stores: stores,
     });
+  } catch (err) {
+    res.json(err);
+  }
+};
+exports.getAllDeals = async (req, res) => {
+  try {
+    const stores = await Deal.find().populate("storeId");
+    console.log(stores);
+    if (stores.length > 0) {
+
+
+      res.status(200).json({
+        status: "200",
+        deals: stores,
+      });
+    }
+    else {
+
+      res.status(200).json({
+        status: "200",
+        message: "Not Found"
+      });
+    }
+  } catch (err) {
+    res.json(err);
+  }
+};
+exports.getProductsByStore = async (req, res) => {
+  try {
+    const products = await ProductInStore.find({ storeId: req.params.storeId }).populate("productId");
+    if (products.length > 0) {
+
+
+      res.status(200).json({
+        status: "200",
+        products: products,
+      });
+    }
+    else {
+
+      res.status(200).json({
+        status: "200",
+        message: "Not Found"
+      });
+    }
+  } catch (err) {
+    res.json(err);
+  }
+};
+exports.getProductById = async (req, res) => {
+  try {
+    const products = await Product.findOne({ productId: req.params.productId });
+    if (products) {
+
+
+      res.status(200).json({
+        status: "200",
+        products: products,
+      });
+    }
+    else {
+
+      res.status(200).json({
+        status: "200",
+        message: "Not Found"
+      });
+    }
   } catch (err) {
     res.json(err);
   }
@@ -220,6 +346,27 @@ exports.getStoreByCity = async (req, res) => {
       res.json(404).json({
         status: 404,
         message: "no store found in stated area",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "400",
+      error: err,
+    });
+  }
+};
+exports.getAllOffersData = async (req, res) => {
+  try {
+    const data = await Offers.find().populate({ path: "dealId", select: "name status" }).populate({ path: "storeId", select: "storeName" }).populate({ path: "productId", select: "image name orignalPrice" }).populate({ path: "branchId", select: "branchName" });
+    if (data.length > 0) {
+      res.status(200).json({
+        status: "200",
+        data: data,
+      });
+    } else {
+      res.json(404).json({
+        status: 404,
+        message: "no data found",
       });
     }
   } catch (err) {
@@ -295,16 +442,34 @@ exports.addCategory = async (req, res) => {
 }
 exports.addDeal = async (req, res) => {
   try {
-    console.log(JSON.parse(req.body.location));
-
+    // console.log(JSON.parse(req.body.location));
+    let text = req.file.path
+    let text2 = text.split("uploads")
+    let text3 = "uploads\\" + text2[1];
     const obj = {
       ...req.body,
-      location: JSON.parse(req.body.location),
-      image: req.file.path
+      // location: JSON.parse(req.body.location),
+      image: text3
     }
+    console.log(req.body);
     const resp = await Deal.create({ ...obj })
 
-    if (resp) {
+    // var endDate = new Date(req.body.toDate);
+    // var day = toDate.getDate();
+    // var month = toDate.getMonth();
+    // var hour = toDate.getHours();
+    // var minutes = toDate.getMinutes();
+    // var seconds = toDate.getSeconds();
+    // cron.schedule(
+    //   `${seconds} ${minutes} ${hour} ${day} ${month} * `,
+    //   async () => {
+    //     await Deal.updateOne(
+    //       { _id: resp._id },
+    //       { $set: { status: false } }
+    //     );
+    //   }
+    // );
+    if (!!resp) {
       res.status(200).json({
         status: "200",
         resp,
@@ -321,9 +486,14 @@ exports.addDeal = async (req, res) => {
   }
 
 }
-exports.addProductToBranchOfStore = async (req, res) => {
+exports.addProductToStore = async (req, res) => {
   try {
-    const s = await ProductInBranch.create({ ...req.body });
+    console.log(req.body);
+    let array = [];
+    for (i of req?.body?.storeId) {
+      array.push({ productId: req?.body?.productId, storeId: i })
+    }
+    const s = await ProductInStore.create([...array]);
     res
       .json({
         status: "200",
@@ -344,8 +514,10 @@ exports.addProductToBranchOfStore = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
   try {
-
-    const s = await Product.create({ ...req.body, image: req.file.path });
+    let text = req.file.path
+    let text2 = text.split("uploads")
+    let text3 = "uploads\\" + text2[1];
+    const s = await Product.create({ ...req.body, image: text3 });
     res
       .json({
         status: "200",
@@ -405,27 +577,27 @@ exports.getAllProducts = async (req, res) => {
     });
   }
 };
-exports.getProdByBranchId = async (req, res) => {
-  try {
-    const products = await Product.find({ branchId: req.body.branchId });
-    if (products) {
-      res.status(200).json({
-        status: "200",
-        products: products,
-      });
-    } else {
-      res.status(404).json({
-        status: "404",
-        message: "no prods found",
-      });
-    }
-  } catch (err) {
-    res.status(400).json({
-      status: "400",
-      error: err,
-    });
-  }
-};
+// exports.getProdByStoreId = async (req, res) => {
+//   try {
+//     const products = await Product.find({ storeId: req.body.branchId });
+//     if (products) {
+//       res.status(200).json({
+//         status: "200",
+//         products: products,
+//       });
+//     } else {
+//       res.status(404).json({
+//         status: "404",
+//         message: "no prods found",
+//       });
+//     }
+//   } catch (err) {
+//     res.status(400).json({
+//       status: "400",
+//       error: err,
+//     });
+//   }
+// };
 exports.getNearbyProducts = async (req, res) => {
   try {
     const { lng, lat } = req.body;
@@ -652,8 +824,13 @@ exports.addOfferOnStore = async (req, res) => {
 exports.addOffer = async (req, res) => {
   try {
 
-
-    const p = await Offers.create({ ...req.body })
+    // console.log(req.body)
+    let array = [];
+    for (i of req?.body?.branchId) {
+      array.push({ ...req.body, branchId: i })
+    }
+    console.log(array);
+    const p = await Offers.create([...array])
     if (p) {
 
 

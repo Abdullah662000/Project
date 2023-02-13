@@ -4,5 +4,7 @@ const schema = mongoose.Schema({
 
   storeImage: String,
 
+
+
 });
 module.exports = mongoose.model("Store", schema);

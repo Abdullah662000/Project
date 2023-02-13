@@ -8,7 +8,7 @@ const Offers = require("../model/Offers")
 const productModel = require("../model/Product");
 const mongoose = require("mongoose");
 const Product = require("../model/Product");
-const ProductInBranch = require("../model/ProductInBranch");
+const ProductInStore = require("../model/ProductInStore");
 const Branch = require("../model/Branch");
 const Deal = require("../model/Deal");
 
@@ -113,7 +113,7 @@ exports.searchProductFormDifferentStores = async (req, res) => {
 async function searchProducts(products) {
   let obj = [];
   const data = await Promise.all(products.map(async (ele) => {
-    const result = await ProductInBranch.find({ productId: ele._id });
+    const result = await ProductInStore.find({ productId: ele._id });
     for (let i of result) {
 
       obj.push(i);
@@ -144,7 +144,7 @@ async function searchProducts(products) {
 
     const result = await Deal.findOne({ status: true, storeId: ele.storeId });
     return !!result && arry[i]
-    // return await ProductInBranch.find({ productId: ele._id }).populate("branchId");
+    // return await ProductInStore.find({ productId: ele._id }).populate("branchId");
 
   }))
   // console.log(data3);
@@ -152,7 +152,7 @@ async function searchProducts(products) {
 
     const result = await Offers.findOne({ storeId: ele.storeId, productId: ele.productId }).populate("productId").populate("storeId");
     return !!result && result
-    // return await ProductInBranch.find({ productId: ele._id }).populate("branchId");
+    // return await ProductInStore.find({ productId: ele._id }).populate("branchId");
 
   }))
   // console.log(data4);
@@ -178,17 +178,22 @@ exports.getNearbyDealsStores = async (req, res) => {
           $maxDistance: 1 * 6000,
         },
       },
-      status: true
+
     };
-    const deals = await Deals.find(query).populate("storeId");
-
-
+    let array = [];
+    const deals = await Branch.find(query);
+    Promise.all(deals.map(async (i, inedex) => {
+      const data = await Deals.findOne({ status: true, storeId: i.storeId }).populate("storeId")
+      array.push(data);
+    }))
+    console.log(deals);
+    console.log(array);
 
     // console.log(result);
-    if (deals.length > 0) {
+    if (array.length > 0) {
       res.status(200).json({
         status: "200",
-        deals: deals,
+        deals: array,
       });
     } else {
       res.status(200).json({
@@ -265,9 +270,10 @@ exports.getNearbyDealsProducts = async (req, res) => {
           $maxDistance: 1 * 6000,
         },
       },
-      status: true
+
     };
-    const deals = await Deals.find(query);
+    const deals = await Offers.find(query).populate("productId");
+
     const result = await findDeals(deals);
 
     console.log(result);
@@ -296,9 +302,10 @@ exports.getNearbyDealsProducts = async (req, res) => {
 async function findDeals(deals) {
 
   const data = await Promise.all(deals.map(async (ele) => {
-    return await Offers.find({ dealId: ele._id }).populate("productId");
+    return await Deals.find({ dealId: ele._id, status: true });
 
   }))
+  console.log(data);
   return data;
   // console.log(data);
 

@@ -15,7 +15,7 @@ const {
   getStoreByCity,
   addParentStore,
   getParentStore,
-  getProdByBranchId,
+  // getProdByBranchId,
   getAllParentStore,
   addOfferByBranch,
   addOfferOnStore,
@@ -26,6 +26,14 @@ const {
   addOffer,
   addProductToBranchOfStore,
   addCategory,
+  getCategories,
+  getBranchesByStoreId,
+  getAllDeals,
+  getProductById,
+
+  getAllOffersData,
+  addProductToStore,
+  getProductsByStore,
 } = require("../controller/adminController");
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -50,7 +58,7 @@ const fileFilter = (req, file, cb) => {
 let upload = multer({ storage, fileFilter });
 router.post("/adminSignin", adminSignin);
 router.post("/adminSignup", adminSignup);
-router.post("/getProdByBranchId", verification, getProdByBranchId);
+// router.post("/getProdByBranchId", verification, getProdByBranchId);
 router.post("/addBranch", upload.single("files"), addStore); //send image from frontend
 router.post("/getStoreByCity", getStoreByCity);
 router.post("/getStore", getStore);
@@ -78,9 +86,18 @@ router.post(
   "/addOffer",
   addOffer
 );
-router.put("/addProductToBranch", addProductToBranchOfStore);
+router.put("/addProductToStore", addProductToStore);
 router.put("/addDeal", upload.single('files'), addDeal)
 router.post("/getNearbyOffer", getNearbyOffer);
 router.post("/getNearbyProducts", getNearbyProducts);
 router.put("/addCategory", addCategory);
+router.get("/getCategories", getCategories);
+router.get("/getAllDeals", getAllDeals);
+router.get("/getAll", getAllDeals);
+router.get("/getProductsByStore/:storeId", getProductsByStore);
+router.get("/getProductById/:productId", getProductById);
+router.get("/getAllOffersData", getAllOffersData);
+
+
+router.get("/getBranchesByStoreId/:storeId", getBranchesByStoreId);
 module.exports = router;
